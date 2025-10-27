@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env.local
+.env.production
+.env.staging
+
+# Keep example files but not actual sensitive configs
+!.env.production.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

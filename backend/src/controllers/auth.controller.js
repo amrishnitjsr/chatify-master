@@ -8,8 +8,11 @@ import cloudinary from "../lib/cloudinary.js";
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
 
+  console.log("📝 Signup attempt:", { fullName, email, passwordProvided: !!password });
+
   try {
     if (!fullName || !email || !password) {
+      console.log("❌ Missing required fields");
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -70,20 +73,34 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("🔐 Login attempt:", { email, passwordProvided: !!password });
+
   if (!email || !password) {
+    console.log("❌ Missing credentials");
     return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
+    console.log("🔍 Looking for user with email:", email);
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
-    // never tell the client which one is incorrect: password or email
-
+    
+    if (!user) {
+      console.log("❌ User not found with email:", email);
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    
+    console.log("✅ User found:", user.fullName);
+    
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isPasswordCorrect) {
+      console.log("❌ Invalid password for user:", email);
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
+    console.log("✅ Password correct, generating token");
     generateToken(user._id, res);
 
+    console.log("✅ Login successful for:", user.fullName);
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
@@ -91,7 +108,13 @@ export const login = async (req, res) => {
       profilePic: user.profilePic,
     });
   } catch (error) {
-    console.error("Error in login controller:", error);
+    console.error("💥 Error in login controller:", error);
+    
+    // Check if it's a database connection error
+    if (error.name === 'MongooseError' || error.name === 'MongooseServerSelectionError') {
+      return res.status(503).json({ message: "Database connection error. Please try again later." });
+    }
+    
     res.status(500).json({ message: "Internal server error" });
   }
 };
