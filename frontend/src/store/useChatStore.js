@@ -1,8 +1,7 @@
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
+import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
-import { encryptMessage, decryptMessage } from "../lib/encryption.js";
 import { devUtils } from "../lib/config.js";
 
 export const useChatStore = create((set, get) => ({

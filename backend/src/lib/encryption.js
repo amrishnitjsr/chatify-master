@@ -38,7 +38,7 @@ export function encryptMessage(plaintext, senderId, receiverId) {
         const key = generateEncryptionKey(senderId, receiverId);
         const iv = crypto.randomBytes(IV_LENGTH); // GCM mode uses 12 bytes IV
 
-        const cipher = crypto.createCipherGCM(ALGORITHM, key, iv);
+        const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
         let encrypted = cipher.update(plaintext, 'utf8', 'hex');
         encrypted += cipher.final('hex');
@@ -77,7 +77,7 @@ export function decryptMessage(encryptedData, senderId, receiverId) {
         const authTag = data.slice(-TAG_LENGTH);
         const encrypted = data.slice(IV_LENGTH, -TAG_LENGTH);
 
-        const decipher = crypto.createDecipherGCM(ALGORITHM, key, iv);
+        const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
         decipher.setAuthTag(authTag);
 
         let decrypted = decipher.update(encrypted, null, 'utf8');
