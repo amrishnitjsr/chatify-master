@@ -84,7 +84,7 @@ export const useAuthStore = create((set, get) => ({
     if (!authUser || get().socket?.connected) return;
 
     devUtils.log('Connecting to socket:', config.socket.url);
-    
+
     const socket = io(config.socket.url, config.socket.options);
 
     socket.connect();

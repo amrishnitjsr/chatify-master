@@ -2,6 +2,7 @@ import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
+import { encryptMessage, decryptMessage, validateEncryptionConfig } from "../lib/encryption.js";
 
 export const getAllContacts = async (req, res) => {
   try {
@@ -27,7 +28,31 @@ export const getMessagesByUserId = async (req, res) => {
       ],
     });
 
-    res.status(200).json(messages);
+    // Decrypt messages before sending to client
+    const decryptedMessages = messages.map(message => {
+      if (message.isEncrypted && message.text) {
+        try {
+          const decryptedText = decryptMessage(
+            message.text, 
+            message.senderId.toString(), 
+            message.receiverId.toString()
+          );
+          return {
+            ...message.toObject(),
+            text: decryptedText
+          };
+        } catch (error) {
+          console.error('Failed to decrypt message:', error);
+          return {
+            ...message.toObject(),
+            text: '[Message decryption failed]'
+          };
+        }
+      }
+      return message.toObject();
+    });
+
+    res.status(200).json(decryptedMessages);
   } catch (error) {
     console.log("Error in getMessages controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -58,21 +83,45 @@ export const sendMessage = async (req, res) => {
       imageUrl = uploadResponse.secure_url;
     }
 
+    // Encrypt the message text before saving to database
+    let encryptedText = null;
+    let isEncrypted = false;
+    
+    if (text) {
+      try {
+        validateEncryptionConfig();
+        encryptedText = encryptMessage(text, senderId.toString(), receiverId.toString());
+        isEncrypted = true;
+        console.log('✅ Message encrypted successfully');
+      } catch (error) {
+        console.error('⚠️  Encryption failed, saving as plaintext:', error);
+        encryptedText = text;
+        isEncrypted = false;
+      }
+    }
+
     const newMessage = new Message({
       senderId,
       receiverId,
-      text,
+      text: encryptedText,
       image: imageUrl,
+      isEncrypted,
     });
 
     await newMessage.save();
 
+    // Prepare the message for real-time transmission (with decrypted text)
+    const messageForTransmission = {
+      ...newMessage.toObject(),
+      text: text || null // Send original plaintext for real-time display
+    };
+
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+      io.to(receiverSocketId).emit("newMessage", messageForTransmission);
     }
 
-    res.status(201).json(newMessage);
+    res.status(201).json(messageForTransmission);
   } catch (error) {
     console.log("Error in sendMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });

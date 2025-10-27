@@ -20,11 +20,13 @@ chatify-master/
 ## 🔧 Development Setup
 
 ### Backend (.env)
+
 - Contains all necessary environment variables
 - Pre-configured for local development
 - Includes your current database and service credentials
 
 ### Frontend (.env & .env.local)
+
 - `.env`: Main configuration
 - `.env.local`: Local overrides (higher priority)
 - Automatically detects localhost:3000 for backend
@@ -34,11 +36,13 @@ chatify-master/
 ### Step 1: Prepare Backend Environment
 
 1. Copy the production template:
+
    ```bash
    cp backend/.env.production.example backend/.env.production
    ```
 
 2. Update the following in `.env.production`:
+
    ```bash
    # Update these for production:
    NODE_ENV=production
@@ -51,11 +55,13 @@ chatify-master/
 ### Step 2: Prepare Frontend Environment
 
 1. Copy the production template:
+
    ```bash
    cp frontend/.env.production.example frontend/.env.production
    ```
 
 2. Update the following in `.env.production`:
+
    ```bash
    # Update these for production:
    VITE_APP_MODE=production
@@ -68,6 +74,7 @@ chatify-master/
 ## 🏗️ Platform-Specific Examples
 
 ### Railway Deployment
+
 ```bash
 # Backend (.env.production)
 CLIENT_URL=https://chatify-frontend.up.railway.app
@@ -78,6 +85,7 @@ VITE_SOCKET_URL=https://chatify-backend.up.railway.app
 ```
 
 ### Vercel + Railway
+
 ```bash
 # Backend on Railway (.env.production)
 CLIENT_URL=https://chatify-app.vercel.app
@@ -88,6 +96,7 @@ VITE_SOCKET_URL=https://chatify-backend.up.railway.app
 ```
 
 ### Render Deployment
+
 ```bash
 # Backend (.env.production)
 CLIENT_URL=https://chatify-frontend.onrender.com
@@ -98,7 +107,9 @@ VITE_SOCKET_URL=https://chatify-backend.onrender.com
 ```
 
 ### Same Domain Deployment
+
 If your backend serves the frontend:
+
 ```bash
 # Frontend (.env.production)
 VITE_API_BASE_URL=/api
@@ -108,12 +119,15 @@ VITE_SOCKET_URL=/
 ## 🔐 Security Considerations
 
 ### Environment File Protection
+
 - ✅ `.env.local`, `.env.production` are in `.gitignore`
 - ✅ Example files (`.env.production.example`) are safe to commit
 - ❌ Never commit actual `.env` files with credentials
 
 ### Production Secrets
+
 1. **Generate Strong JWT Secret**:
+
    ```bash
    node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
    ```
@@ -129,7 +143,8 @@ VITE_SOCKET_URL=/
 
 ## 🚀 Quick Deployment Checklist
 
-### Before Deployment:
+### Before Deployment
+
 - [ ] Update `CLIENT_URL` in backend `.env`
 - [ ] Update `VITE_API_BASE_URL` and `VITE_SOCKET_URL` in frontend `.env`
 - [ ] Set `NODE_ENV=production` in backend
@@ -138,7 +153,8 @@ VITE_SOCKET_URL=/
 - [ ] Generate strong production JWT secret
 - [ ] Disable debug modes in frontend
 
-### After Deployment:
+### After Deployment
+
 - [ ] Test API endpoints
 - [ ] Test WebSocket connection
 - [ ] Test image uploads (Cloudinary)
@@ -151,12 +167,14 @@ VITE_SOCKET_URL=/
 To update configurations after deployment:
 
 1. **Change Backend Port**:
+
    ```bash
    # In backend/.env
    PORT=8080
    ```
 
 2. **Change Frontend Backend URL**:
+
    ```bash
    # In frontend/.env
    VITE_API_BASE_URL=https://new-backend-url.com/api
@@ -164,6 +182,7 @@ To update configurations after deployment:
    ```
 
 3. **Switch Database**:
+
    ```bash
    # In backend/.env
    MONGO_URI=mongodb+srv://new-credentials@new-cluster.mongodb.net/new-db
@@ -173,7 +192,7 @@ After updating `.env` files, redeploy your applications.
 
 ## 🐛 Troubleshooting
 
-### Common Issues:
+### Common Issues
 
 1. **CORS Errors**: Check `CLIENT_URL` matches your frontend domain
 2. **Socket Connection Failed**: Verify `VITE_SOCKET_URL` is correct
@@ -181,8 +200,10 @@ After updating `.env` files, redeploy your applications.
 4. **Database Connection**: Verify MongoDB URI and network access
 5. **Authentication Issues**: Check JWT secret consistency
 
-### Debug Mode:
+### Debug Mode
+
 Enable debug mode in development:
+
 ```bash
 # In frontend/.env.local
 VITE_DEBUG_MODE=true

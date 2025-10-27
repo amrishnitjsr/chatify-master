@@ -1,7 +1,9 @@
-import { useState, useRef } from "react";
-import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { LogOutIcon, VolumeOffIcon, Volume2Icon, ShieldCheckIcon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import { testEncryption } from "../lib/encryption.js";
+import { config } from "../lib/config.js";
 
 const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 
@@ -61,7 +63,15 @@ function ProfileHeader() {
               {authUser.fullName}
             </h3>
 
-            <p className="text-slate-400 text-xs">Online</p>
+            <div className="flex items-center gap-2">
+              <p className="text-slate-400 text-xs">Online</p>
+              {config.dev.debugMode && (
+                <div className="flex items-center gap-1" title="End-to-end encryption enabled">
+                  <ShieldCheckIcon className="size-3 text-green-400" />
+                  <span className="text-green-400 text-xs">E2E</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

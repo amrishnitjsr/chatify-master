@@ -15,7 +15,11 @@ const messageSchema = new mongoose.Schema(
     text: {
       type: String,
       trim: true,
-      maxlength: 2000,
+      maxlength: 5000, // Increased for encrypted data
+    },
+    isEncrypted: {
+      type: Boolean,
+      default: true, // All new messages will be encrypted by default
     },
     image: {
       type: String,

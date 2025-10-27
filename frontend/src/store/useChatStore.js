@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
+import { encryptMessage, decryptMessage } from "../lib/encryption.js";
+import { devUtils } from "../lib/config.js";
 
 export const useChatStore = create((set, get) => ({
   allContacts: [],
@@ -60,8 +62,15 @@ export const useChatStore = create((set, get) => ({
     const { selectedUser, messages } = get();
     const { authUser } = useAuthStore.getState();
 
+    devUtils.log('📤 Sending message:', { 
+      to: selectedUser.fullName, 
+      hasText: !!messageData.text, 
+      hasImage: !!messageData.image 
+    });
+
     const tempId = `temp-${Date.now()}`;
 
+    // Create optimistic message for immediate UI update
     const optimisticMessage = {
       _id: tempId,
       senderId: authUser._id,
@@ -69,18 +78,29 @@ export const useChatStore = create((set, get) => ({
       text: messageData.text,
       image: messageData.image,
       createdAt: new Date().toISOString(),
-      isOptimistic: true, // flag to identify optimistic messages (optional)
+      isOptimistic: true, // flag to identify optimistic messages
+      isEncrypted: false, // Don't encrypt optimistic messages for immediate display
     };
-    // immidetaly update the ui by adding the message
+
+    // Immediately update the UI by adding the message
     set({ messages: [...messages, optimisticMessage] });
 
     try {
+      // Send the message to backend (backend will handle encryption)
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
-      set({ messages: messages.concat(res.data) });
+      
+      // Replace optimistic message with server response
+      const updatedMessages = messages.filter(msg => msg._id !== tempId);
+      set({ messages: [...updatedMessages, res.data] });
+      
+      devUtils.log('✅ Message sent successfully');
     } catch (error) {
-      // remove optimistic message on failure
-      set({ messages: messages });
-      toast.error(error.response?.data?.message || "Something went wrong");
+      // Remove optimistic message on failure
+      const failedMessages = messages.filter(msg => msg._id !== tempId);
+      set({ messages: failedMessages });
+      
+      devUtils.error('❌ Failed to send message:', error);
+      toast.error(error.response?.data?.message || "Failed to send message");
     }
   },
 

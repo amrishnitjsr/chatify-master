@@ -83,14 +83,14 @@ export const login = async (req, res) => {
   try {
     console.log("🔍 Looking for user with email:", email);
     const user = await User.findOne({ email });
-    
+
     if (!user) {
       console.log("❌ User not found with email:", email);
       return res.status(400).json({ message: "Invalid credentials" });
     }
-    
+
     console.log("✅ User found:", user.fullName);
-    
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       console.log("❌ Invalid password for user:", email);
@@ -109,12 +109,12 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.error("💥 Error in login controller:", error);
-    
+
     // Check if it's a database connection error
     if (error.name === 'MongooseError' || error.name === 'MongooseServerSelectionError') {
       return res.status(503).json({ message: "Database connection error. Please try again later." });
     }
-    
+
     res.status(500).json({ message: "Internal server error" });
   }
 };

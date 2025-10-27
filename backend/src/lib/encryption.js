@@ -7,9 +7,9 @@ import crypto from 'crypto';
 import { ENV } from './env.js';
 
 const ALGORITHM = 'aes-256-gcm';
-const IV_LENGTH = 16; // For GCM, this is always 12, but we'll use 16 for AES
+const IV_LENGTH = 12; // For GCM, this is always 12 bytes
 const SALT_LENGTH = 64;
-const TAG_LENGTH = 16;
+const TAG_LENGTH = 16; // GCM auth tag is 16 bytes
 const ITERATIONS = 100000;
 
 /**
@@ -17,11 +17,11 @@ const ITERATIONS = 100000;
  * This ensures only the sender and receiver can decrypt messages
  */
 function generateEncryptionKey(senderId, receiverId) {
-  // Create a consistent key regardless of sender/receiver order
-  const participants = [senderId.toString(), receiverId.toString()].sort();
-  const keyMaterial = participants.join(':') + ':' + ENV.ENCRYPTION_SECRET;
-  
-  return crypto.pbkdf2Sync(keyMaterial, ENV.ENCRYPTION_SALT, ITERATIONS, 32, 'sha256');
+    // Create a consistent key regardless of sender/receiver order
+    const participants = [senderId.toString(), receiverId.toString()].sort();
+    const keyMaterial = participants.join(':') + ':' + ENV.ENCRYPTION_SECRET;
+
+    return crypto.pbkdf2Sync(keyMaterial, ENV.ENCRYPTION_SALT, ITERATIONS, 32, 'sha256');
 }
 
 /**
@@ -36,10 +36,9 @@ export function encryptMessage(plaintext, senderId, receiverId) {
     if (!plaintext) return null;
     
     const key = generateEncryptionKey(senderId, receiverId);
-    const iv = crypto.randomBytes(IV_LENGTH);
+    const iv = crypto.randomBytes(IV_LENGTH); // GCM mode uses 12 bytes IV
     
-    const cipher = crypto.createCipher(ALGORITHM, key);
-    cipher.setAAD(Buffer.from(senderId.toString() + receiverId.toString()));
+    const cipher = crypto.createCipherGCM(ALGORITHM, key, iv);
     
     let encrypted = cipher.update(plaintext, 'utf8', 'hex');
     encrypted += cipher.final('hex');
@@ -59,9 +58,7 @@ export function encryptMessage(plaintext, senderId, receiverId) {
     console.error('Encryption error:', error);
     throw new Error('Failed to encrypt message');
   }
-}
-
-/**
+}/**
  * Decrypt a message text
  * @param {string} encryptedData - The encrypted message in base64
  * @param {string} senderId - Sender's user ID
@@ -80,8 +77,7 @@ export function decryptMessage(encryptedData, senderId, receiverId) {
     const authTag = data.slice(-TAG_LENGTH);
     const encrypted = data.slice(IV_LENGTH, -TAG_LENGTH);
     
-    const decipher = crypto.createDecipher(ALGORITHM, key);
-    decipher.setAAD(Buffer.from(senderId.toString() + receiverId.toString()));
+    const decipher = crypto.createDecipherGCM(ALGORITHM, key, iv);
     decipher.setAuthTag(authTag);
     
     let decrypted = decipher.update(encrypted, null, 'utf8');
@@ -100,50 +96,50 @@ export function decryptMessage(encryptedData, senderId, receiverId) {
  * This will be used in the frontend to encrypt messages before sending
  */
 export const clientEncryption = {
-  /**
-   * Generate a key pair for a chat between two users
-   */
-  generateChatKey: (senderId, receiverId) => {
-    // This will be implemented on the frontend
-    // Using a simple algorithm that both sender and receiver can compute
-    const participants = [senderId, receiverId].sort();
-    return participants.join(':');
-  },
-  
-  /**
-   * Simple encryption for client-side (will be enhanced on frontend)
-   */
-  encryptText: async (text, chatKey) => {
-    // This is a placeholder - will be implemented with crypto-js on frontend
-    return btoa(text); // Simple base64 encoding as fallback
-  },
-  
-  /**
-   * Simple decryption for client-side
-   */
-  decryptText: async (encryptedText, chatKey) => {
-    // This is a placeholder - will be implemented with crypto-js on frontend
-    try {
-      return atob(encryptedText); // Simple base64 decoding as fallback
-    } catch {
-      return encryptedText; // Return as-is if not encrypted
+    /**
+     * Generate a key pair for a chat between two users
+     */
+    generateChatKey: (senderId, receiverId) => {
+        // This will be implemented on the frontend
+        // Using a simple algorithm that both sender and receiver can compute
+        const participants = [senderId, receiverId].sort();
+        return participants.join(':');
+    },
+
+    /**
+     * Simple encryption for client-side (will be enhanced on frontend)
+     */
+    encryptText: async (text, chatKey) => {
+        // This is a placeholder - will be implemented with crypto-js on frontend
+        return btoa(text); // Simple base64 encoding as fallback
+    },
+
+    /**
+     * Simple decryption for client-side
+     */
+    decryptText: async (encryptedText, chatKey) => {
+        // This is a placeholder - will be implemented with crypto-js on frontend
+        try {
+            return atob(encryptedText); // Simple base64 decoding as fallback
+        } catch {
+            return encryptedText; // Return as-is if not encrypted
+        }
     }
-  }
 };
 
 /**
  * Validate encryption configuration
  */
 export function validateEncryptionConfig() {
-  if (!ENV.ENCRYPTION_SECRET || ENV.ENCRYPTION_SECRET === 'your-encryption-secret-here') {
-    console.warn('⚠️  ENCRYPTION_SECRET not configured - using default (not secure for production)');
-    return false;
-  }
-  
-  if (!ENV.ENCRYPTION_SALT || ENV.ENCRYPTION_SALT === 'your-encryption-salt-here') {
-    console.warn('⚠️  ENCRYPTION_SALT not configured - using default (not secure for production)');
-    return false;
-  }
-  
-  return true;
+    if (!ENV.ENCRYPTION_SECRET || ENV.ENCRYPTION_SECRET === 'your-encryption-secret-here') {
+        console.warn('⚠️  ENCRYPTION_SECRET not configured - using default (not secure for production)');
+        return false;
+    }
+
+    if (!ENV.ENCRYPTION_SALT || ENV.ENCRYPTION_SALT === 'your-encryption-salt-here') {
+        console.warn('⚠️  ENCRYPTION_SALT not configured - using default (not secure for production)');
+        return false;
+    }
+
+    return true;
 }

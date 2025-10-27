@@ -20,7 +20,7 @@ export const connectDB = async () => {
     console.log(`📊 Database: ${conn.connection.name}`);
   } catch (error) {
     console.error("💥 Error connecting to MONGODB:", error.message);
-    
+
     if (isDevelopment) {
       console.log("\n🚨 DEVELOPMENT MODE SUGGESTIONS:");
       console.log("1. Install MongoDB locally: https://www.mongodb.com/try/download/community");
@@ -31,14 +31,14 @@ export const connectDB = async () => {
       console.log("3. Or use a local connection string: mongodb://localhost:27017/chatify");
       console.log("\n🔧 Your current MONGO_URI:", ENV.MONGO_URI);
     }
-    
+
     // In development, we can continue without crashing to allow frontend testing
     if (isDevelopment) {
       console.log("\n⚠️  Continuing in development mode without database...");
       console.log("⚠️  Authentication and data persistence will not work!");
       return;
     }
-    
+
     process.exit(1); // Only exit in production
   }
 };

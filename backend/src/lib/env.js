@@ -5,30 +5,30 @@ export const ENV = {
   // Server Configuration
   PORT: process.env.PORT || 3000,
   NODE_ENV: process.env.NODE_ENV || 'development',
-  
+
   // Database Configuration
   MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/chatify',
-  
+
   // JWT Configuration
   JWT_SECRET: process.env.JWT_SECRET || 'your-jwt-secret-key-here',
-  
+
   // Client/Frontend URLs
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
-  
+
   // Email Configuration (Resend)
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
   EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'Chatify',
-  
+
   // Cloudinary Configuration
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  
+
   // Security Configuration (Arcjet)
   ARCJET_KEY: process.env.ARCJET_KEY,
   ARCJET_ENV: process.env.ARCJET_ENV || 'development',
-  
+
   // Message Encryption Configuration
   ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET || 'your-encryption-secret-here',
   ENCRYPTION_SALT: process.env.ENCRYPTION_SALT || 'your-encryption-salt-here',
@@ -53,7 +53,7 @@ const validateEnv = () => {
       console.error(`   - ${varName}`);
     });
     console.error('\n📝 Please check your .env file in the backend directory');
-    
+
     if (ENV.NODE_ENV === 'production') {
       process.exit(1);
     }
