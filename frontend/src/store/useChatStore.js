@@ -62,10 +62,10 @@ export const useChatStore = create((set, get) => ({
     const { selectedUser, messages } = get();
     const { authUser } = useAuthStore.getState();
 
-    devUtils.log('📤 Sending message:', { 
-      to: selectedUser.fullName, 
-      hasText: !!messageData.text, 
-      hasImage: !!messageData.image 
+    devUtils.log('📤 Sending message:', {
+      to: selectedUser.fullName,
+      hasText: !!messageData.text,
+      hasImage: !!messageData.image
     });
 
     const tempId = `temp-${Date.now()}`;
@@ -88,17 +88,17 @@ export const useChatStore = create((set, get) => ({
     try {
       // Send the message to backend (backend will handle encryption)
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
-      
+
       // Replace optimistic message with server response
       const updatedMessages = messages.filter(msg => msg._id !== tempId);
       set({ messages: [...updatedMessages, res.data] });
-      
+
       devUtils.log('✅ Message sent successfully');
     } catch (error) {
       // Remove optimistic message on failure
       const failedMessages = messages.filter(msg => msg._id !== tempId);
       set({ messages: failedMessages });
-      
+
       devUtils.error('❌ Failed to send message:', error);
       toast.error(error.response?.data?.message || "Failed to send message");
     }

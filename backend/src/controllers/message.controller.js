@@ -33,8 +33,8 @@ export const getMessagesByUserId = async (req, res) => {
       if (message.isEncrypted && message.text) {
         try {
           const decryptedText = decryptMessage(
-            message.text, 
-            message.senderId.toString(), 
+            message.text,
+            message.senderId.toString(),
             message.receiverId.toString()
           );
           return {
@@ -86,7 +86,7 @@ export const sendMessage = async (req, res) => {
     // Encrypt the message text before saving to database
     let encryptedText = null;
     let isEncrypted = false;
-    
+
     if (text) {
       try {
         validateEncryptionConfig();

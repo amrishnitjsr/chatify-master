@@ -32,32 +32,32 @@ function generateEncryptionKey(senderId, receiverId) {
  * @returns {string} - Encrypted message in base64 format
  */
 export function encryptMessage(plaintext, senderId, receiverId) {
-  try {
-    if (!plaintext) return null;
-    
-    const key = generateEncryptionKey(senderId, receiverId);
-    const iv = crypto.randomBytes(IV_LENGTH); // GCM mode uses 12 bytes IV
-    
-    const cipher = crypto.createCipherGCM(ALGORITHM, key, iv);
-    
-    let encrypted = cipher.update(plaintext, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    
-    const authTag = cipher.getAuthTag();
-    
-    // Combine IV + encrypted data + auth tag
-    const result = Buffer.concat([
-      iv,
-      Buffer.from(encrypted, 'hex'),
-      authTag
-    ]);
-    
-    return result.toString('base64');
-    
-  } catch (error) {
-    console.error('Encryption error:', error);
-    throw new Error('Failed to encrypt message');
-  }
+    try {
+        if (!plaintext) return null;
+
+        const key = generateEncryptionKey(senderId, receiverId);
+        const iv = crypto.randomBytes(IV_LENGTH); // GCM mode uses 12 bytes IV
+
+        const cipher = crypto.createCipherGCM(ALGORITHM, key, iv);
+
+        let encrypted = cipher.update(plaintext, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+
+        const authTag = cipher.getAuthTag();
+
+        // Combine IV + encrypted data + auth tag
+        const result = Buffer.concat([
+            iv,
+            Buffer.from(encrypted, 'hex'),
+            authTag
+        ]);
+
+        return result.toString('base64');
+
+    } catch (error) {
+        console.error('Encryption error:', error);
+        throw new Error('Failed to encrypt message');
+    }
 }/**
  * Decrypt a message text
  * @param {string} encryptedData - The encrypted message in base64
@@ -66,29 +66,29 @@ export function encryptMessage(plaintext, senderId, receiverId) {
  * @returns {string} - Decrypted message
  */
 export function decryptMessage(encryptedData, senderId, receiverId) {
-  try {
-    if (!encryptedData) return null;
-    
-    const key = generateEncryptionKey(senderId, receiverId);
-    const data = Buffer.from(encryptedData, 'base64');
-    
-    // Extract IV, encrypted data, and auth tag
-    const iv = data.slice(0, IV_LENGTH);
-    const authTag = data.slice(-TAG_LENGTH);
-    const encrypted = data.slice(IV_LENGTH, -TAG_LENGTH);
-    
-    const decipher = crypto.createDecipherGCM(ALGORITHM, key, iv);
-    decipher.setAuthTag(authTag);
-    
-    let decrypted = decipher.update(encrypted, null, 'utf8');
-    decrypted += decipher.final('utf8');
-    
-    return decrypted;
-    
-  } catch (error) {
-    console.error('Decryption error:', error);
-    throw new Error('Failed to decrypt message');
-  }
+    try {
+        if (!encryptedData) return null;
+
+        const key = generateEncryptionKey(senderId, receiverId);
+        const data = Buffer.from(encryptedData, 'base64');
+
+        // Extract IV, encrypted data, and auth tag
+        const iv = data.slice(0, IV_LENGTH);
+        const authTag = data.slice(-TAG_LENGTH);
+        const encrypted = data.slice(IV_LENGTH, -TAG_LENGTH);
+
+        const decipher = crypto.createDecipherGCM(ALGORITHM, key, iv);
+        decipher.setAuthTag(authTag);
+
+        let decrypted = decipher.update(encrypted, null, 'utf8');
+        decrypted += decipher.final('utf8');
+
+        return decrypted;
+
+    } catch (error) {
+        console.error('Decryption error:', error);
+        throw new Error('Failed to decrypt message');
+    }
 }
 
 /**
