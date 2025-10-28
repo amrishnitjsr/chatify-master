@@ -25,7 +25,10 @@ const allowedOrigins = [
   ENV.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:3000',
-  'http://127.0.0.1:5173'
+  'http://127.0.0.1:5173',
+  'https://chatify-frontend.onrender.com', // Add your frontend URL when deployed
+  'https://chatify-frontend.vercel.app',    // Common deployment URLs
+  'https://chatify-frontend.netlify.app'
 ];
 
 console.log('🌐 CORS Configuration - Allowed Origins:', allowedOrigins);
@@ -62,14 +65,23 @@ app.use("/api/follow", followRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-// make ready for deployment
-if (ENV.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-  app.get("*", (_, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+// Health check endpoint for deployment platforms
+app.get("/api/health", (_, res) => {
+  res.status(200).json({ 
+    status: "healthy", 
+    timestamp: new Date().toISOString(),
+    service: "chatify-backend"
   });
-}
+});
+
+// Basic API info endpoint
+app.get("/api", (_, res) => {
+  res.json({ 
+    message: "Chatify Backend API", 
+    version: "1.0.0",
+    status: "running"
+  });
+});
 
 server.listen(PORT, () => {
   console.log("Server running on port: " + PORT);

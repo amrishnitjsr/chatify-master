@@ -20,7 +20,7 @@ function getApiBaseUrl() {
     }
 
     // Production fallback
-    return "https://chatify-67td.onrender.com/api";
+    return "https://chatify-backend-51mg.onrender.com/api";
 }
 
 function getSocketUrl() {
@@ -35,7 +35,7 @@ function getSocketUrl() {
     }
 
     // Production fallback
-    return "/";
+    return "https://chatify-backend-51mg.onrender.com";
 }
 
 // =======================

@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: chatify-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install --prefix backend
+    startCommand: npm run start --prefix backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: chatify-backend
+          property: port
+      - key: MONGO_URI
+        sync: false  # Set this in Render dashboard manually
+      - key: JWT_SECRET
+        sync: false  # Set this in Render dashboard manually  
+      - key: RESEND_API_KEY
+        sync: false  # Set this in Render dashboard manually
+      - key: EMAIL_FROM
+        sync: false  # Set this in Render dashboard manually
+      - key: EMAIL_FROM_NAME
+        sync: false  # Set this in Render dashboard manually
+      - key: CLIENT_URL
+        sync: false  # Set this in Render dashboard manually
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false  # Set this in Render dashboard manually
+      - key: CLOUDINARY_API_KEY
+        sync: false  # Set this in Render dashboard manually
+      - key: CLOUDINARY_API_SECRET
+        sync: false  # Set this in Render dashboard manually
+      - key: ARCJET_KEY
+        sync: false  # Set this in Render dashboard manually
+      - key: ARCJET_ENV
+        value: production
+      - key: ENCRYPTION_SECRET
+        sync: false  # Set this in Render dashboard manually
+      - key: ENCRYPTION_SALT
+        sync: false  # Set this in Render dashboard manually
