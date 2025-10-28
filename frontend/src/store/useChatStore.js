@@ -35,6 +35,13 @@ export const useChatStore = create((set, get) => ({
   setActiveTab: (tab) => set({ activeTab: tab }),
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 
+  getUnreadMessageCount: () => {
+    const { chats } = get();
+    // In a real app, this would track unread messages per chat
+    // For now, we'll simulate with a count based on number of chats
+    return chats.length > 0 ? Math.min(chats.length, 9) : 0;
+  },
+
   getAllContacts: async () => {
     set({ isUsersLoading: true });
     try {

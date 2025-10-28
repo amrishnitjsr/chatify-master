@@ -32,7 +32,7 @@ import { useChatStore } from "../store/useChatStore";
 
 const ChatifyLayout = () => {
     const { authUser, logout, onlineUsers } = useAuthStore();
-    const { selectedUser } = useChatStore();
+    const { selectedUser, getUnreadMessageCount } = useChatStore();
     const { unreadCount, fetchUnreadCount } = useNotificationStore();
     const [activeTab, setActiveTab] = useState("home");
     const [showMessagesPanel, setShowMessagesPanel] = useState(false);
@@ -123,9 +123,11 @@ const ChatifyLayout = () => {
                         >
                             <MessageCircleIcon className="size-7" strokeWidth={1.5} />
                             {/* Message count badge */}
-                            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full size-5 flex items-center justify-center">
-                                3
-                            </div>
+                            {getUnreadMessageCount() > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                                    {getUnreadMessageCount() > 9 ? '9+' : getUnreadMessageCount()}
+                                </span>
+                            )}
                         </button>
                     </div>
                 </div>

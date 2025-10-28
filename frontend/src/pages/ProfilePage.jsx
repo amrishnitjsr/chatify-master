@@ -124,8 +124,8 @@ const ProfilePage = ({ userId: propUserId }) => {
 
     return (
         <div className="h-full overflow-y-auto bg-black md:bg-slate-900">
-            {/* Mobile Header - Chatify Style */}
-            <div className="md:hidden bg-black border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
+            {/* Mobile Header - Android Style */}
+            <div className="md:hidden bg-black px-4 py-3 sticky top-0 z-40">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <button onClick={() => navigate(-1)}>
@@ -135,12 +135,23 @@ const ProfilePage = ({ userId: propUserId }) => {
                             {displayUser?.username || 'Profile'}
                         </h1>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <button>
-                            <ShareIcon className="size-6 text-white" />
+                    <div className="flex items-center gap-4">
+                        <button className="p-1">
+                            <div className="bg-red-500 text-white rounded-full p-2">
+                                <span className="text-xs font-bold">9+</span>
+                            </div>
                         </button>
-                        <button onClick={() => setShowMenu(!showMenu)}>
-                            <MoreVerticalIcon className="size-6 text-white" />
+                        <button className="p-1">
+                            <div className="bg-red-500 text-white rounded-full p-2">
+                                <span className="text-xs font-bold">1</span>
+                            </div>
+                        </button>
+                        <button onClick={() => setShowMenu(!showMenu)} className="p-1">
+                            <div className="flex flex-col gap-1">
+                                <div className="w-1 h-1 bg-white rounded-full"></div>
+                                <div className="w-1 h-1 bg-white rounded-full"></div>
+                                <div className="w-1 h-1 bg-white rounded-full"></div>
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -149,142 +160,132 @@ const ProfilePage = ({ userId: propUserId }) => {
             <div className="max-w-4xl mx-auto md:px-4 md:py-8">
                 {/* Profile Header */}
                 <div className="p-4 md:p-0">
-                    <div className="flex items-start gap-4 md:gap-8 mb-6">
-                        {/* Profile Picture */}
+                    {/* Profile Picture and Name Section */}
+                    <div className="flex items-center gap-4 mb-6">
                         <div className="relative flex-shrink-0">
                             {displayUser?.profilePic ? (
                                 <img
                                     src={displayUser.profilePic}
                                     alt="Profile"
-                                    className="size-20 md:size-32 rounded-full object-cover"
+                                    className="size-20 rounded-full object-cover"
                                 />
                             ) : (
-                                <div className="size-20 md:size-32 rounded-full bg-slate-700 flex items-center justify-center">
-                                    <UserIcon className="size-8 md:size-16 text-slate-400" />
+                                <div className="size-20 rounded-full bg-slate-700 flex items-center justify-center">
+                                    <UserIcon className="size-8 text-slate-400" />
                                 </div>
                             )}
+                            <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1">
+                                <PlusIcon className="size-4 text-white" />
+                            </div>
                         </div>
-
-                        {/* Profile Info */}
-                        <div className="flex-1 min-w-0">
-                            {/* Username and Buttons */}
-                            <div className="flex items-center gap-4 mb-4">
-                                <h1 className="text-xl md:text-2xl font-semibold text-white truncate">
-                                    {displayUser?.fullName}
-                                </h1>
-
-                                {!isOwnProfile ? (
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => toggleFollow(userId)}
-                                            disabled={isToggling}
-                                            className={`px-4 py-1.5 rounded-lg font-semibold transition-colors ${isUserFollowing
-                                                ? "bg-slate-600 hover:bg-slate-500 text-white"
-                                                : "bg-blue-500 hover:bg-blue-600 text-white"
-                                                }`}
-                                        >
-                                            {isToggling ? "..." : isUserFollowing ? "Following" : "Follow"}
-                                        </button>
-                                        <button
-                                            onClick={handleMessageUser}
-                                            className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-1.5 rounded-lg font-semibold transition-colors"
-                                        >
-                                            Message
-                                        </button>
-                                        <button className="p-2 text-white hover:text-slate-300">
-                                            <UserPlusIcon className="size-5" />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            onClick={() => setShowEditModal(true)}
-                                            className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-1.5 rounded-lg font-semibold transition-colors"
-                                        >
-                                            Edit profile
-                                        </button>
-                                        <button className="bg-slate-600 hover:bg-slate-500 text-white px-4 py-1.5 rounded-lg font-semibold transition-colors">
-                                            Share profile
-                                        </button>
-                                        <button className="p-2 text-white hover:text-slate-300">
-                                            <UserPlusIcon className="size-5" />
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Stats - Mobile */}
-                            <div className="md:hidden flex items-center justify-around bg-slate-800/50 rounded-lg p-3 mb-4">
-                                <div className="text-center">
-                                    <div className="font-semibold text-white text-lg">{userPostsPagination?.totalPosts || 0}</div>
-                                    <div className="text-slate-400 text-sm">posts</div>
-                                </div>
-                                <div className="text-center cursor-pointer" onClick={() => setShowFollowersModal(true)}>
-                                    <div className="font-semibold text-white text-lg">{followersCount}</div>
-                                    <div className="text-slate-400 text-sm">followers</div>
-                                </div>
-                                <div className="text-center cursor-pointer" onClick={() => setShowFollowersModal(true)}>
-                                    <div className="font-semibold text-white text-lg">{followingCount}</div>
-                                    <div className="text-slate-400 text-sm">following</div>
-                                </div>
-                            </div>
-
-                            {/* Bio */}
-                            <div className="mb-4">
-                                <p className="text-white font-medium mb-1">{displayUser?.fullName}</p>
-                                <p className="text-white text-sm">
-                                    {displayUser?.bio || "No bio yet"}
-                                </p>
-                                <p className="text-blue-400 text-sm">
-                                    {displayUser?.website}
-                                </p>
-                            </div>
-
-                            {/* Stats - Desktop */}
-                            <div className="hidden md:flex items-center gap-8">
-                                <div className="text-white">
-                                    <span className="font-semibold">{userPostsPagination?.totalPosts || 0}</span> posts
-                                </div>
-                                <div
-                                    className="text-white cursor-pointer hover:opacity-80 transition-opacity"
-                                    onClick={() => setShowFollowersModal(true)}
-                                >
-                                    <span className="font-semibold">{followersCount}</span> followers
-                                </div>
-                                <div
-                                    className="text-white cursor-pointer hover:opacity-80 transition-opacity"
-                                    onClick={() => setShowFollowersModal(true)}
-                                >
-                                    <span className="font-semibold">{followingCount}</span> following
-                                </div>
-                            </div>
+                        <div className="flex-1">
+                            <h1 className="text-xl font-semibold text-white mb-1">
+                                {displayUser?.fullName || displayUser?.username}
+                            </h1>
                         </div>
                     </div>
 
-                    {/* Highlights */}
-                    <div className="flex gap-3 overflow-x-auto pb-2 mb-6 px-1">
+                    {/* Stats Section */}
+                    <div className="flex items-center justify-around text-center mb-6">
+                        <div>
+                            <div className="text-xl font-bold text-white">{userPostsPagination?.totalPosts || 0}</div>
+                            <div className="text-sm text-slate-400">posts</div>
+                        </div>
+                        <div className="cursor-pointer" onClick={() => setShowFollowersModal(true)}>
+                            <div className="text-xl font-bold text-white">{followersCount}</div>
+                            <div className="text-sm text-slate-400">followers</div>
+                        </div>
+                        <div className="cursor-pointer" onClick={() => setShowFollowersModal(true)}>
+                            <div className="text-xl font-bold text-white">{followingCount}</div>
+                            <div className="text-sm text-slate-400">following</div>
+                        </div>
+                    </div>
+
+                    {/* Bio Section */}
+                    <div className="mb-6">
+                        <p className="text-blue-400 text-sm font-medium mb-1">
+                            @{displayUser?.username || 'username'}
+                        </p>
+                        <p className="text-white text-sm font-medium mb-1">
+                            {displayUser?.bio || displayUser?.fullName || 'B.Tech In (CS)2026'}
+                        </p>
+                        <div className="flex items-center gap-1 mb-2">
+                            <span className="text-lg">🤠</span>
+                            <span className="text-lg">🤓</span>
+                        </div>
+                        <p className="text-slate-300 text-sm">
+                            @{displayUser?.username || 'username'}
+                        </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 mb-6">
+                        {!isOwnProfile ? (
+                            <>
+                                <button
+                                    onClick={() => toggleFollow(userId)}
+                                    disabled={isToggling}
+                                    className={`flex-1 py-2 px-4 rounded-lg font-semibold text-sm ${isUserFollowing
+                                        ? "bg-slate-600 hover:bg-slate-500 text-white"
+                                        : "bg-blue-500 hover:bg-blue-600 text-white"
+                                        }`}
+                                >
+                                    {isToggling ? "..." : isUserFollowing ? "Following" : "Follow"}
+                                </button>
+                                <button
+                                    onClick={handleMessageUser}
+                                    className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 px-4 rounded-lg font-semibold text-sm"
+                                >
+                                    Message
+                                </button>
+                                <button className="bg-slate-600 hover:bg-slate-500 text-white p-2 rounded-lg">
+                                    <UserPlusIcon className="size-4" />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => setShowEditModal(true)}
+                                    className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 px-4 rounded-lg font-semibold text-sm"
+                                >
+                                    Edit profile
+                                </button>
+                                <button className="flex-1 bg-slate-600 hover:bg-slate-500 text-white py-2 px-4 rounded-lg font-semibold text-sm">
+                                    Share profile
+                                </button>
+                                <button className="bg-slate-600 hover:bg-slate-500 text-white p-2 rounded-lg">
+                                    <UserPlusIcon className="size-4" />
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Highlights Section - Only show "New" */}
+                    <div className="flex gap-4 overflow-x-auto pb-4 mb-6">
                         {/* New Highlight */}
                         <div className="flex-shrink-0 flex flex-col items-center">
-                            <div className="size-16 md:size-20 rounded-full border-2 border-slate-600 flex items-center justify-center bg-slate-800">
-                                <PlusIcon className="size-6 text-slate-400" />
+                            <div className="size-16 rounded-full border-2 border-dashed border-slate-500 flex items-center justify-center bg-transparent">
+                                <PlusIcon className="size-6 text-slate-500" />
                             </div>
-                            <p className="text-xs text-white text-center mt-1">New</p>
+                            <p className="text-xs text-white text-center mt-2">New</p>
                         </div>
 
-                        {/* Sample Highlights */}
-                        {["Highlights", "Highlights", "Highlights", "Highlights"].map((highlight, index) => (
-                            <div key={index} className="flex-shrink-0 flex flex-col items-center">
-                                <div className="size-16 md:size-20 rounded-full border-2 border-slate-600 bg-slate-700">
-                                    {/* Highlight image would go here */}
+                        {/* Sample highlight for demo - can be replaced with real data */}
+                        {displayUser?.bio && (
+                            <div className="flex-shrink-0 flex flex-col items-center">
+                                <div className="size-16 rounded-full border-2 border-orange-500 overflow-hidden">
+                                    <div className="w-full h-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center">
+                                        <span className="text-white text-lg">🎓</span>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-white text-center mt-1 truncate w-16">{highlight}</p>
+                                <p className="text-xs text-white text-center mt-2 truncate w-16">college memories</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
                 {/* Content Tabs */}
-                <div className="border-t border-slate-800 md:border-slate-700">
+                <div className="border-t border-slate-800">
                     <div className="flex">
                         <button
                             onClick={() => setProfileTab("posts")}
@@ -293,8 +294,7 @@ const ProfilePage = ({ userId: propUserId }) => {
                                 : "text-slate-400"
                                 }`}
                         >
-                            <GridIcon className="size-4" />
-                            <span className="hidden md:inline">POSTS</span>
+                            <GridIcon className="size-5" />
                         </button>
                         <button
                             onClick={() => setProfileTab("reels")}
@@ -303,8 +303,7 @@ const ProfilePage = ({ userId: propUserId }) => {
                                 : "text-slate-400"
                                 }`}
                         >
-                            <PlayIcon className="size-4" />
-                            <span className="hidden md:inline">REELS</span>
+                            <PlayIcon className="size-5" />
                         </button>
                         <button
                             onClick={() => setProfileTab("tagged")}
@@ -313,12 +312,19 @@ const ProfilePage = ({ userId: propUserId }) => {
                                 : "text-slate-400"
                                 }`}
                         >
-                            <BookmarkIcon className="size-4" />
-                            <span className="hidden md:inline">TAGGED</span>
+                            <BookmarkIcon className="size-5" />
+                        </button>
+                        <button
+                            onClick={() => setProfileTab("contact")}
+                            className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-medium ${profileTab === "contact"
+                                ? "text-white border-t-2 border-white"
+                                : "text-slate-400"
+                                }`}
+                        >
+                            <UserIcon className="size-5" />
                         </button>
                     </div>
                 </div>
-            </div>
 
             {/* Content Based on Active Tab */}
             <div className="px-0 md:px-0">
@@ -334,21 +340,48 @@ const ProfilePage = ({ userId: propUserId }) => {
                                 {/* Chatify-Style Posts Grid */}
                                 <div className="grid grid-cols-3 gap-1 md:gap-4">
                                     {userPosts.length === 0 ? (
-                                        <div className="col-span-3 text-center py-16">
-                                            <div className="w-24 h-24 rounded-full border-2 border-slate-600 flex items-center justify-center mx-auto mb-4">
-                                                <svg className="size-12 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <div className="col-span-3 text-center py-16 px-4">
+                                            {/* Android-style illustration */}
+                                            <div className="mx-auto mb-8 relative">
+                                                <svg width="200" height="120" viewBox="0 0 200 120" className="mx-auto">
+                                                    {/* Left hand */}
+                                                    <path d="M20 50 Q30 30, 50 35 Q70 40, 80 55 Q85 65, 80 75 Q70 85, 50 80 Q30 75, 20 50Z" 
+                                                          fill="#D4A574" stroke="#C4956A" strokeWidth="2"/>
+                                                    
+                                                    {/* Right hand */}
+                                                    <path d="M180 50 Q170 30, 150 35 Q130 40, 120 55 Q115 65, 120 75 Q130 85, 150 80 Q170 75, 180 50Z" 
+                                                          fill="#D4A574" stroke="#C4956A" strokeWidth="2"/>
+                                                    
+                                                    {/* Heart shape formed by hands */}
+                                                    <path d="M80 60 Q100 40, 120 60 Q100 80, 80 60Z" 
+                                                          fill="none" stroke="#E91E63" strokeWidth="3" strokeDasharray="5,5">
+                                                        <animate attributeName="stroke-dashoffset" values="10;0;10" dur="2s" repeatCount="indefinite"/>
+                                                    </path>
+                                                    
+                                                    {/* Fingers details */}
+                                                    <ellipse cx="45" cy="45" rx="8" ry="12" fill="#D4A574" stroke="#C4956A" strokeWidth="1"/>
+                                                    <ellipse cx="155" cy="45" rx="8" ry="12" fill="#D4A574" stroke="#C4956A" strokeWidth="1"/>
+                                                    
+                                                    {/* Sparkles */}
+                                                    <g fill="#FFD700">
+                                                        <circle cx="60" cy="30" r="2">
+                                                            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0s"/>
+                                                        </circle>
+                                                        <circle cx="140" cy="25" r="2">
+                                                            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0.5s"/>
+                                                        </circle>
+                                                        <circle cx="100" cy="20" r="2">
+                                                            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="1s"/>
+                                                        </circle>
+                                                    </g>
                                                 </svg>
                                             </div>
-                                            <h3 className="text-xl font-semibold text-white mb-1">
-                                                {isOwnProfile ? "Share Photos" : "No Posts Yet"}
+                                            
+                                            <h3 className="text-lg font-semibold text-white mb-2">
+                                                No Posts Yet
                                             </h3>
-                                            <p className="text-slate-400">
-                                                {isOwnProfile
-                                                    ? "When you share photos, they'll appear on your profile."
-                                                    : "When they share photos, you'll see them here."
-                                                }
+                                            <p className="text-slate-400 text-sm max-w-xs mx-auto">
+                                                Start capturing and sharing your moments
                                             </p>
                                         </div>
                                     ) : (
@@ -448,6 +481,7 @@ const ProfilePage = ({ userId: propUserId }) => {
                 onClose={() => setShowFollowersModal(false)}
                 userId={userId}
             />
+            </div>
         </div>
     );
 };
