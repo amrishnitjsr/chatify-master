@@ -41,6 +41,8 @@ const ProfilePage = ({ userId: propUserId }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showFollowersModal, setShowFollowersModal] = useState(false);
+    const [profileTab, setProfileTab] = useState("posts"); // posts, reels, tagged
+    const [showMenu, setShowMenu] = useState(false);
     const isOwnProfile = authUser?._id === userId;
 
     const {
