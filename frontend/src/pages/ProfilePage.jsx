@@ -179,8 +179,8 @@ const ProfilePage = ({ userId: propUserId }) => {
                                             onClick={() => toggleFollow(userId)}
                                             disabled={isToggling}
                                             className={`px-4 py-1.5 rounded-lg font-semibold transition-colors ${isUserFollowing
-                                                    ? "bg-slate-600 hover:bg-slate-500 text-white"
-                                                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                                                ? "bg-slate-600 hover:bg-slate-500 text-white"
+                                                : "bg-blue-500 hover:bg-blue-600 text-white"
                                                 }`}
                                         >
                                             {isToggling ? "..." : isUserFollowing ? "Following" : "Follow"}
@@ -289,8 +289,8 @@ const ProfilePage = ({ userId: propUserId }) => {
                         <button
                             onClick={() => setProfileTab("posts")}
                             className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-medium ${profileTab === "posts"
-                                    ? "text-white border-t-2 border-white"
-                                    : "text-slate-400"
+                                ? "text-white border-t-2 border-white"
+                                : "text-slate-400"
                                 }`}
                         >
                             <GridIcon className="size-4" />
@@ -299,8 +299,8 @@ const ProfilePage = ({ userId: propUserId }) => {
                         <button
                             onClick={() => setProfileTab("reels")}
                             className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-medium ${profileTab === "reels"
-                                    ? "text-white border-t-2 border-white"
-                                    : "text-slate-400"
+                                ? "text-white border-t-2 border-white"
+                                : "text-slate-400"
                                 }`}
                         >
                             <PlayIcon className="size-4" />
@@ -309,8 +309,8 @@ const ProfilePage = ({ userId: propUserId }) => {
                         <button
                             onClick={() => setProfileTab("tagged")}
                             className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-medium ${profileTab === "tagged"
-                                    ? "text-white border-t-2 border-white"
-                                    : "text-slate-400"
+                                ? "text-white border-t-2 border-white"
+                                : "text-slate-400"
                                 }`}
                         >
                             <BookmarkIcon className="size-4" />

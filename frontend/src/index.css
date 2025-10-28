@@ -47,19 +47,19 @@
   body {
     background-color: #000;
   }
-  
+
   /* Full width containers on mobile */
   .mobile-full-width {
     width: 100vw;
     margin-left: calc(-50vw + 50%);
   }
-  
+
   /* Touch-friendly buttons */
   .mobile-touch-target {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Remove borders on mobile like Chatify */
   .mobile-no-border {
     border-left: none !important;

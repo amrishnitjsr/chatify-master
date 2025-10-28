@@ -151,16 +151,16 @@ function CompactChatContainer() {
                             className="w-full bg-slate-700/80 border border-slate-600/50 rounded-3xl px-6 py-3 pr-12 text-white placeholder-slate-400 text-base focus:outline-none focus:border-blue-500 focus:bg-slate-700 transition-all resize-none min-h-[48px] leading-relaxed"
                             style={{ fontSize: '16px' }} // Prevents zoom on iOS
                         />
-                        
+
                         {/* Emoji Picker Button */}
                         <div className="absolute right-3 top-1/2 -translate-y-1/2" ref={emojiPickerRef}>
                             <button
                                 type="button"
                                 onClick={toggleEmojiPicker}
-                                className={`p-2 rounded-full touch-manipulation transition-colors ${showEmojiPicker 
-                                    ? 'text-blue-400 bg-slate-600/50' 
+                                className={`p-2 rounded-full touch-manipulation transition-colors ${showEmojiPicker
+                                    ? 'text-blue-400 bg-slate-600/50'
                                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-600/30'
-                                }`}
+                                    }`}
                             >
                                 <Smile className="w-5 h-5" />
                             </button>
@@ -177,11 +177,10 @@ function CompactChatContainer() {
                     <button
                         type="submit"
                         disabled={!newMessage.trim()}
-                        className={`p-3 rounded-full touch-manipulation transition-all duration-200 ${
-                            newMessage.trim()
+                        className={`p-3 rounded-full touch-manipulation transition-all duration-200 ${newMessage.trim()
                                 ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95'
                                 : 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
-                        }`}
+                            }`}
                     >
                         <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />

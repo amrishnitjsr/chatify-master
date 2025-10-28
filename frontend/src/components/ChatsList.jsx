@@ -53,10 +53,10 @@ function ChatsList() {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <svg 
-                className="size-5 text-slate-500 group-hover:text-slate-400 transition-colors" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="size-5 text-slate-500 group-hover:text-slate-400 transition-colors"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

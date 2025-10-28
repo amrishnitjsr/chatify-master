@@ -49,7 +49,7 @@ const HomePage = () => {
                     <StoriesSection />
                 </div>
             </div>
-            
+
             {/* Posts Feed Container */}
             <div className="md:max-w-2xl md:mx-auto md:px-4 md:py-6">
                 {/* Desktop Header */}

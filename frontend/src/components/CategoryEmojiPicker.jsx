@@ -167,11 +167,10 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
                         <button
                             key={key}
                             onClick={() => setActiveCategory(key)}
-                            className={`w-full h-12 flex items-center justify-center text-xl hover:bg-slate-600/50 active:bg-slate-600/70 transition-all touch-manipulation my-1 mx-1 rounded-lg ${
-                                activeCategory === key 
-                                    ? 'bg-blue-600 text-white shadow-lg' 
+                            className={`w-full h-12 flex items-center justify-center text-xl hover:bg-slate-600/50 active:bg-slate-600/70 transition-all touch-manipulation my-1 mx-1 rounded-lg ${activeCategory === key
+                                    ? 'bg-blue-600 text-white shadow-lg'
                                     : 'text-slate-300 hover:text-white'
-                            }`}
+                                }`}
                             title={category.name}
                         >
                             {category.icon}
