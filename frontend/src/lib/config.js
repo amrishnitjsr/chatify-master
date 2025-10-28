@@ -1,18 +1,53 @@
 // =====================================
-// FRONTEND CONFIGURATION HELPER
+// FRONTEND CONFIGURATION HELPER (Fixed)
 // =====================================
 
-/**
- * Centralized configuration for frontend application
- * Uses environment variables with fallback defaults
- */
+import axios from "axios";
+
+// =======================
+// Helper Functions
+// =======================
+
+function getApiBaseUrl() {
+    // Force local development when running in dev mode
+    if (import.meta.env.MODE === "development") {
+        return "http://localhost:3000/api";
+    }
+
+    // Use environment variable for production or fallback
+    if (import.meta.env.VITE_API_BASE_URL) {
+        return import.meta.env.VITE_API_BASE_URL;
+    }
+
+    // Production fallback
+    return "https://chatify-67td.onrender.com/api";
+}
+
+function getSocketUrl() {
+    // Force local development when running in dev mode
+    if (import.meta.env.MODE === "development") {
+        return "http://localhost:3000";
+    }
+
+    // Use environment variable for production or fallback
+    if (import.meta.env.VITE_SOCKET_URL) {
+        return import.meta.env.VITE_SOCKET_URL;
+    }
+
+    // Production fallback
+    return "/";
+}
+
+// =======================
+// Main Config Object
+// =======================
 
 export const config = {
     // App Information
     app: {
-        name: import.meta.env.VITE_APP_NAME || 'Chatify',
-        version: import.meta.env.VITE_APP_VERSION || '1.0.0',
-        mode: import.meta.env.VITE_APP_MODE || import.meta.env.MODE || 'development',
+        name: import.meta.env.VITE_APP_NAME || "Chatify",
+        version: import.meta.env.VITE_APP_VERSION || "1.0.0",
+        mode: import.meta.env.VITE_APP_MODE || import.meta.env.MODE || "development",
     },
 
     // API Configuration
@@ -26,66 +61,54 @@ export const config = {
         url: getSocketUrl(),
         options: {
             withCredentials: true,
-            transports: ['websocket', 'polling'],
+            transports: ["websocket", "polling"],
         },
     },
 
     // Development Configuration
     dev: {
-        debugMode: import.meta.env.VITE_DEBUG_MODE === 'true',
-        showLogs: import.meta.env.VITE_SHOW_LOGS === 'true',
+        debugMode: import.meta.env.VITE_DEBUG_MODE === "true",
+        showLogs: import.meta.env.VITE_SHOW_LOGS === "true",
     },
 };
 
-/**
- * Get the API base URL from environment variables
- */
-function getApiBaseUrl() {
-    // If VITE_API_BASE_URL is set, use it
-    if (import.meta.env.VITE_API_BASE_URL) {
-        return import.meta.env.VITE_API_BASE_URL;
+// =======================
+// Axios Global Setup ✅
+// =======================
+
+axios.defaults.baseURL = config.api.baseURL;
+axios.defaults.timeout = config.api.timeout;
+axios.defaults.withCredentials = true; // ✅ Critical: ensures JWT cookies are sent
+
+// Optional: Add global interceptors for debugging
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (config.dev.debugMode) {
+            console.error("[CHATIFY ERROR]", error?.response?.status, error?.config?.url);
+        }
+        return Promise.reject(error);
     }
+);
 
-    // Default behavior based on mode
-    return import.meta.env.MODE === "development"
-        ? "https://social-media-a31j.onrender.com/api"
-        : "/api";
-}
+// =======================
+// Development Utils
+// =======================
 
-/**
- * Get the socket URL from environment variables
- */
-function getSocketUrl() {
-    // If VITE_SOCKET_URL is set, use it
-    if (import.meta.env.VITE_SOCKET_URL) {
-        return import.meta.env.VITE_SOCKET_URL;
-    }
-
-    // Default behavior based on mode
-    return import.meta.env.MODE === "development"
-        ? "https://social-media-a31j.onrender.com"
-        : "/";
-}
-
-/**
- * Development helper functions
- */
 export const devUtils = {
     log: (...args) => {
         if (config.dev.debugMode && config.dev.showLogs) {
-            console.log('[CHATIFY]', ...args);
+            console.log("[CHATIFY]", ...args);
         }
     },
-
     error: (...args) => {
         if (config.dev.debugMode) {
-            console.error('[CHATIFY ERROR]', ...args);
+            console.error("[CHATIFY ERROR]", ...args);
         }
     },
-
     warn: (...args) => {
         if (config.dev.debugMode) {
-            console.warn('[CHATIFY WARNING]', ...args);
+            console.warn("[CHATIFY WARNING]", ...args);
         }
     },
 };

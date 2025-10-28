@@ -24,24 +24,23 @@ app.use(express.json({ limit: "5mb" })); // req.body
 const allowedOrigins = [
   ENV.CLIENT_URL,
   'http://localhost:5173',
-  'http://localhost:3000', 
-  'http://127.0.0.1:5173',
-  'https://social-media-a31j.onrender.com'
+  'http://localhost:3000',
+  'http://127.0.0.1:5173'
 ];
 
 console.log('🌐 CORS Configuration - Allowed Origins:', allowedOrigins);
 console.log('🌐 CLIENT_URL from ENV:', ENV.CLIENT_URL);
 
-app.use(cors({ 
+app.use(cors({
   origin: (origin, callback) => {
     console.log('🌐 CORS Origin Request:', origin);
-    
+
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
       console.log('🌐 CORS: Allowing request with no origin');
       return callback(null, true);
     }
-    
+
     if (allowedOrigins.includes(origin)) {
       console.log('✅ CORS: Allowing origin:', origin);
       callback(null, true);

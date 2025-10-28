@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { usePostStore } from "../store/usePostStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useFollowStore } from "../store/useFollowStore";
+import { useChatStore } from "../store/useChatStore";
 import PostCard from "../components/posts/PostCard";
 import PostsLoadingSkeleton from "../components/posts/PostsLoadingSkeleton";
 import EditProfileModal from "../components/EditProfileModal";
@@ -12,7 +13,9 @@ import { UserIcon, CalendarIcon, RefreshCwIcon } from "lucide-react";
 const ProfilePage = ({ userId: propUserId }) => {
     const { userId: paramUserId } = useParams();
     const userId = propUserId || paramUserId;
+    const navigate = useNavigate();
     const { authUser } = useAuthStore();
+    const { setSelectedUser, setActiveTab } = useChatStore();
     const {
         userPosts,
         fetchUserPosts,
@@ -67,6 +70,17 @@ const ProfilePage = ({ userId: propUserId }) => {
         }
     };
 
+    const handleMessageUser = () => {
+        if (profileUser) {
+            // Set the selected user in chat store
+            setSelectedUser(profileUser);
+            // Switch to messages tab
+            setActiveTab("chats");
+            // Navigate to home (which shows the Instagram layout with chat)
+            navigate("/");
+        }
+    };
+
     if (!authUser) {
         return (
             <div className="flex items-center justify-center min-h-screen">
@@ -118,7 +132,10 @@ const ProfilePage = ({ userId: propUserId }) => {
                                         >
                                             {isToggling ? "..." : isUserFollowing ? "Following" : "Follow"}
                                         </button>
-                                        <button className="bg-slate-600 hover:bg-slate-500 text-white px-6 py-1.5 rounded-lg font-semibold transition-colors">
+                                        <button 
+                                            onClick={handleMessageUser}
+                                            className="bg-slate-600 hover:bg-slate-500 text-white px-6 py-1.5 rounded-lg font-semibold transition-colors"
+                                        >
                                             Message
                                         </button>
                                         <button className="text-white hover:text-slate-300 p-2">

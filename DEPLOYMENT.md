@@ -3,13 +3,16 @@
 This guide helps you deploy Chatify to production environments by managing environment variables effectively.
 
 ## 🔗 Deployed Backend URL
-Your backend is deployed at: `https://social-media-a31j.onrender.com`
+
+Your backend is deployed at: `http://localhost:3000`
 
 ## 🛡️ CORS Configuration
+
 The backend has been configured to allow requests from multiple origins:
+
 - `http://localhost:5173` (Local frontend development)
-- `http://localhost:3000` (Local backend development) 
-- `https://social-media-a31j.onrender.com` (Your deployed backend)
+- `http://localhost:3000` (Local backend development)
+- `http://localhost:3000` (Your deployed backend)
 - Any CLIENT_URL specified in environment variables
 
 ## 📁 Environment Files Structure
@@ -214,7 +217,7 @@ After updating `.env` files, redeploy your applications.
 
 If you get 401 (Unauthorized) errors after successful login:
 
-1. **Cross-Origin Cookies**: 
+1. **Cross-Origin Cookies**:
    - Backend automatically configures cookies for cross-origin in production
    - Uses `sameSite: "none"` and `secure: true` for HTTPS
    - Requires `credentials: true` in CORS (already configured)

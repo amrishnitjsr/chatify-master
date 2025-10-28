@@ -93,6 +93,9 @@ export const useChatStore = create((set, get) => ({
       const updatedMessages = messages.filter(msg => msg._id !== tempId);
       set({ messages: [...updatedMessages, res.data] });
 
+      // Refresh chat partners list (in case this was the first message to this user)
+      get().getMyChatPartners();
+
       devUtils.log('✅ Message sent successfully');
     } catch (error) {
       // Remove optimistic message on failure
