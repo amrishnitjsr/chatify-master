@@ -8,7 +8,19 @@ import PostCard from "../components/posts/PostCard";
 import PostsLoadingSkeleton from "../components/posts/PostsLoadingSkeleton";
 import EditProfileModal from "../components/EditProfileModal";
 import FollowersModal from "../components/FollowersModal";
-import { UserIcon, CalendarIcon, RefreshCwIcon } from "lucide-react";
+import { 
+    UserIcon, 
+    CalendarIcon, 
+    RefreshCwIcon,
+    ArrowLeftIcon,
+    ShareIcon,
+    MoreVerticalIcon,
+    GridIcon,
+    PlayIcon,
+    BookmarkIcon,
+    PlusIcon,
+    UserPlusIcon
+} from "lucide-react";
 
 const ProfilePage = ({ userId: propUserId }) => {
     const { userId: paramUserId } = useParams();
