@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
+import useNotificationStore from "../store/useNotificationStore";
 import {
     HomeIcon,
     SearchIcon,
@@ -32,6 +33,7 @@ import { useChatStore } from "../store/useChatStore";
 const InstagramLayout = () => {
     const { authUser, logout, onlineUsers } = useAuthStore();
     const { selectedUser } = useChatStore();
+    const { unreadCount, fetchUnreadCount } = useNotificationStore();
     const [activeTab, setActiveTab] = useState("home");
     const [showMessagesPanel, setShowMessagesPanel] = useState(false);
     const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -51,6 +53,13 @@ const InstagramLayout = () => {
         setActiveTab(itemId);
         setShowMessagesPanel(false); // Close messages panel when navigating
     };
+
+    // Fetch unread notification count on component mount
+    useEffect(() => {
+        if (authUser) {
+            fetchUnreadCount();
+        }
+    }, [authUser, fetchUnreadCount]);
 
     const handleUserProfileClick = (userId) => {
         setActiveTab("profile");
@@ -102,6 +111,11 @@ const InstagramLayout = () => {
                             className="p-1 text-white relative"
                         >
                             <HeartIcon className="size-7" strokeWidth={1.5} />
+                            {unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
                         </button>
                         <button
                             onClick={() => setShowMessagesPanel(true)}

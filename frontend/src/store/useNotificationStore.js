@@ -11,17 +11,20 @@ const useNotificationStore = create((set) => ({
         try {
             set({ isLoading: true });
             const response = await axiosInstance.get(`/notifications?page=${page}&limit=20`);
-            if (response.data.success) {
-                if (page === 1) {
-                    set({ notifications: response.data.data.notifications });
-                } else {
-                    set((state) => ({
-                        notifications: [...state.notifications, ...response.data.data.notifications]
-                    }));
-                }
+            
+            if (page === 1) {
+                set({ 
+                    notifications: response.data.notifications || [],
+                    unreadCount: response.data.unreadCount || 0
+                });
+            } else {
+                set((state) => ({
+                    notifications: [...state.notifications, ...(response.data.notifications || [])]
+                }));
             }
         } catch (error) {
             console.error('Error fetching notifications:', error);
+            set({ notifications: [], unreadCount: 0 });
         } finally {
             set({ isLoading: false });
         }
@@ -31,28 +34,28 @@ const useNotificationStore = create((set) => ({
     fetchUnreadCount: async () => {
         try {
             const response = await axiosInstance.get('/notifications/unread-count');
-            if (response.data.success) {
-                set({ unreadCount: response.data.data.count });
-            }
+            set({ unreadCount: response.data.unreadCount || 0 });
         } catch (error) {
             console.error('Error fetching unread count:', error);
+            set({ unreadCount: 0 });
         }
     },
 
     // Mark notification as read
     markAsRead: async (notificationId) => {
         try {
-            const response = await axiosInstance.patch(`/notifications/${notificationId}/read`);
-            if (response.data.success) {
-                set((state) => ({
-                    notifications: state.notifications.map(notification =>
-                        notification._id === notificationId
-                            ? { ...notification, isRead: true }
-                            : notification
-                    ),
-                    unreadCount: Math.max(0, state.unreadCount - 1)
-                }));
-            }
+            await axiosInstance.patch('/notifications/mark-read', {
+                notificationIds: [notificationId]
+            });
+            
+            set((state) => ({
+                notifications: state.notifications.map(notification =>
+                    notification._id === notificationId
+                        ? { ...notification, isRead: true }
+                        : notification
+                ),
+                unreadCount: Math.max(0, state.unreadCount - 1)
+            }));
         } catch (error) {
             console.error('Error marking notification as read:', error);
         }
@@ -61,16 +64,15 @@ const useNotificationStore = create((set) => ({
     // Mark all notifications as read
     markAllAsRead: async () => {
         try {
-            const response = await axiosInstance.patch('/notifications/mark-all-read');
-            if (response.data.success) {
-                set((state) => ({
-                    notifications: state.notifications.map(notification => ({
-                        ...notification,
-                        isRead: true
-                    })),
-                    unreadCount: 0
-                }));
-            }
+            await axiosInstance.patch('/notifications/mark-read');
+            
+            set((state) => ({
+                notifications: state.notifications.map(notification => ({
+                    ...notification,
+                    isRead: true
+                })),
+                unreadCount: 0
+            }));
         } catch (error) {
             console.error('Error marking all notifications as read:', error);
         }
@@ -79,18 +81,19 @@ const useNotificationStore = create((set) => ({
     // Delete notification
     deleteNotification: async (notificationId) => {
         try {
-            const response = await axiosInstance.delete(`/notifications/${notificationId}`);
-            if (response.data.success) {
-                set((state) => {
-                    const notification = state.notifications.find(n => n._id === notificationId);
-                    return {
-                        notifications: state.notifications.filter(n => n._id !== notificationId),
-                        unreadCount: notification && !notification.isRead
-                            ? Math.max(0, state.unreadCount - 1)
-                            : state.unreadCount
-                    };
-                });
-            }
+            await axiosInstance.delete('/notifications', {
+                data: { notificationIds: [notificationId] }
+            });
+            
+            set((state) => {
+                const notification = state.notifications.find(n => n._id === notificationId);
+                return {
+                    notifications: state.notifications.filter(n => n._id !== notificationId),
+                    unreadCount: notification && !notification.isRead
+                        ? Math.max(0, state.unreadCount - 1)
+                        : state.unreadCount
+                };
+            });
         } catch (error) {
             console.error('Error deleting notification:', error);
         }
@@ -99,10 +102,8 @@ const useNotificationStore = create((set) => ({
     // Clear all notifications
     clearAllNotifications: async () => {
         try {
-            const response = await axiosInstance.delete('/notifications');
-            if (response.data.success) {
-                set({ notifications: [], unreadCount: 0 });
-            }
+            await axiosInstance.delete('/notifications');
+            set({ notifications: [], unreadCount: 0 });
         } catch (error) {
             console.error('Error clearing all notifications:', error);
         }

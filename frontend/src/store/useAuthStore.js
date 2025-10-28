@@ -111,6 +111,17 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  getUserProfile: async (userId) => {
+    try {
+      const res = await axiosInstance.get(`/auth/profile/${userId}`);
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      toast.error(error.response?.data?.message || "Failed to load profile");
+      return null;
+    }
+  },
+
   connectSocket: () => {
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;

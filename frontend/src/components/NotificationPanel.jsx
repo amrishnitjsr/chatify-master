@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X, Heart, UserPlus, UserMinus, MessageCircle, Eye, Trash2, Check, CheckCheck } from 'lucide-react';
 import useNotificationStore from '../store/useNotificationStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const NotificationPanel = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
