@@ -239,45 +239,45 @@ const InstagramLayout = () => {
                         onClick={() => handleNavClick("home")}
                         className="p-2"
                     >
-                        <HomeIcon 
-                            className={`size-7 ${activeTab === "home" ? "text-white fill-current" : "text-white"}`} 
+                        <HomeIcon
+                            className={`size-7 ${activeTab === "home" ? "text-white fill-current" : "text-white"}`}
                             strokeWidth={1.5}
                         />
                     </button>
-                    
+
                     {/* Search */}
                     <button
                         onClick={() => handleNavClick("search")}
                         className="p-2"
                     >
-                        <SearchIcon 
-                            className={`size-7 ${activeTab === "search" ? "text-white" : "text-white"}`} 
+                        <SearchIcon
+                            className={`size-7 ${activeTab === "search" ? "text-white" : "text-white"}`}
                             strokeWidth={1.5}
                         />
                     </button>
-                    
+
                     {/* Create Post */}
                     <button
                         onClick={() => handleNavClick("create")}
                         className="p-2"
                     >
-                        <PlusSquareIcon 
-                            className={`size-7 ${activeTab === "create" ? "text-white" : "text-white"}`} 
+                        <PlusSquareIcon
+                            className={`size-7 ${activeTab === "create" ? "text-white" : "text-white"}`}
                             strokeWidth={1.5}
                         />
                     </button>
-                    
+
                     {/* Reels */}
                     <button
                         onClick={() => handleNavClick("reels")}
                         className="p-2"
                     >
-                        <PlayCircleIcon 
-                            className={`size-7 ${activeTab === "reels" ? "text-white" : "text-white"}`} 
+                        <PlayCircleIcon
+                            className={`size-7 ${activeTab === "reels" ? "text-white" : "text-white"}`}
                             strokeWidth={1.5}
                         />
                     </button>
-                    
+
                     {/* Profile */}
                     <button
                         onClick={() => handleUserProfileClick(authUser?._id)}

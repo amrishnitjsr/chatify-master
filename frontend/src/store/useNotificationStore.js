@@ -11,9 +11,9 @@ const useNotificationStore = create((set) => ({
         try {
             set({ isLoading: true });
             const response = await axiosInstance.get(`/notifications?page=${page}&limit=20`);
-            
+
             if (page === 1) {
-                set({ 
+                set({
                     notifications: response.data.notifications || [],
                     unreadCount: response.data.unreadCount || 0
                 });
@@ -47,7 +47,7 @@ const useNotificationStore = create((set) => ({
             await axiosInstance.patch('/notifications/mark-read', {
                 notificationIds: [notificationId]
             });
-            
+
             set((state) => ({
                 notifications: state.notifications.map(notification =>
                     notification._id === notificationId
@@ -65,7 +65,7 @@ const useNotificationStore = create((set) => ({
     markAllAsRead: async () => {
         try {
             await axiosInstance.patch('/notifications/mark-read');
-            
+
             set((state) => ({
                 notifications: state.notifications.map(notification => ({
                     ...notification,
@@ -84,7 +84,7 @@ const useNotificationStore = create((set) => ({
             await axiosInstance.delete('/notifications', {
                 data: { notificationIds: [notificationId] }
             });
-            
+
             set((state) => {
                 const notification = state.notifications.find(n => n._id === notificationId);
                 return {

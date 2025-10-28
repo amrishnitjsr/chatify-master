@@ -16,7 +16,7 @@ const NotificationsPage = () => {
         deleteNotification,
         clearAllNotifications
     } = useNotificationStore();
-    
+
     const [activeTab, setActiveTab] = useState("all");
 
     useEffect(() => {
@@ -128,11 +128,10 @@ const NotificationsPage = () => {
                     <div className="flex space-x-6">
                         <button
                             onClick={() => setActiveTab("all")}
-                            className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
-                                activeTab === "all"
+                            className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "all"
                                     ? "border-white text-white"
                                     : "border-transparent text-slate-400 hover:text-white"
-                            }`}
+                                }`}
                         >
                             All
                             {notifications.length > 0 && (
@@ -143,11 +142,10 @@ const NotificationsPage = () => {
                         </button>
                         <button
                             onClick={() => setActiveTab("unread")}
-                            className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
-                                activeTab === "unread"
+                            className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "unread"
                                     ? "border-white text-white"
                                     : "border-transparent text-slate-400 hover:text-white"
-                            }`}
+                                }`}
                         >
                             Unread
                             {unreadCount > 0 && (
@@ -178,8 +176,8 @@ const NotificationsPage = () => {
                             {activeTab === "unread" ? "You're all caught up!" : "No activity yet"}
                         </h3>
                         <p className="text-slate-400 max-w-sm">
-                            {activeTab === "unread" 
-                                ? "When you have new activity, you'll see it here" 
+                            {activeTab === "unread"
+                                ? "When you have new activity, you'll see it here"
                                 : "When people interact with your posts or follow you, you'll see it here"
                             }
                         </p>
@@ -189,9 +187,8 @@ const NotificationsPage = () => {
                         {filteredNotifications.map((notification) => (
                             <div
                                 key={notification._id}
-                                className={`group flex items-start gap-4 p-4 cursor-pointer transition-colors hover:bg-slate-800/50 ${
-                                    !notification.isRead ? 'bg-slate-800/30 border-l-2 border-blue-500' : ''
-                                } md:rounded-lg border-b border-slate-800 md:border-0`}
+                                className={`group flex items-start gap-4 p-4 cursor-pointer transition-colors hover:bg-slate-800/50 ${!notification.isRead ? 'bg-slate-800/30 border-l-2 border-blue-500' : ''
+                                    } md:rounded-lg border-b border-slate-800 md:border-0`}
                                 onClick={() => handleNotificationClick(notification)}
                             >
                                 {/* Sender Avatar */}
@@ -207,7 +204,7 @@ const NotificationsPage = () => {
                                             {notification.sender?.fullName?.[0]?.toUpperCase() || '?'}
                                         </div>
                                     )}
-                                    
+
                                     {/* Notification type icon overlay */}
                                     <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-black flex items-center justify-center border-2 border-slate-900">
                                         {getNotificationIcon(notification.type)}

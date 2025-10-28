@@ -113,7 +113,7 @@ const ReelsPage = () => {
                         />
 
                         {/* Play/Pause Overlay */}
-                        <div 
+                        <div
                             className="absolute inset-0 flex items-center justify-center cursor-pointer"
                             onClick={() => setIsPlaying(!isPlaying)}
                         >
@@ -126,13 +126,13 @@ const ReelsPage = () => {
 
                         {/* Swipe areas for navigation */}
                         {currentReel > 0 && (
-                            <div 
+                            <div
                                 className="absolute top-0 left-0 right-0 h-1/3 cursor-pointer"
                                 onClick={() => handleSwipe('down')}
                             />
                         )}
                         {currentReel < sampleReels.length - 1 && (
-                            <div 
+                            <div
                                 className="absolute bottom-0 left-0 right-0 h-1/3 cursor-pointer"
                                 onClick={() => handleSwipe('up')}
                             />
