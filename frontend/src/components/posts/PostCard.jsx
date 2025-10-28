@@ -33,9 +33,9 @@ const PostCard = ({ post }) => {
     };
 
     return (
-        <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden hover:border-slate-600/50 transition-all duration-200">
+        <div className="bg-black md:bg-slate-800/90 md:backdrop-blur-sm border-b border-slate-800 md:border md:border-slate-700/50 md:rounded-xl overflow-hidden hover:border-slate-600/50 transition-all duration-200 mb-0 md:mb-4">
             {/* Header */}
-            <div className="p-6 pb-4">
+            <div className="p-4 md:p-6 pb-3 md:pb-4">
                 <div className="flex items-center justify-between mb-4">
                     <Link
                         to={`/profile/${post.userId._id}`}
@@ -93,29 +93,29 @@ const PostCard = ({ post }) => {
 
             {/* Image */}
             {post.imageUrl && (
-                <div className="px-6 pb-4">
+                <div className="px-0 md:px-6 pb-3 md:pb-4">
                     <img
                         src={post.imageUrl}
                         alt="Post content"
-                        className="w-full max-h-96 object-cover rounded-lg border border-slate-700/50"
+                        className="w-full max-h-96 md:max-h-80 object-cover rounded-none md:rounded-lg border-0 md:border border-slate-700/50"
                     />
                 </div>
             )}
 
             {/* Actions */}
-            <div className="px-6 py-4 border-t border-slate-700/50">
+            <div className="px-4 md:px-6 py-3 md:py-4 border-t border-slate-700/50">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         {/* Like Button */}
                         <button
                             onClick={handleLike}
-                            className={`flex items-center gap-2 transition-colors ${post.hasLiked
+                            className={`flex items-center gap-2 p-2 -m-2 rounded-full transition-colors ${post.hasLiked
                                 ? 'text-red-500 hover:text-red-400'
                                 : 'text-slate-400 hover:text-red-500'
                                 }`}
                         >
                             <HeartIcon
-                                className={`size-5 ${post.hasLiked ? 'fill-current' : ''}`}
+                                className={`size-6 md:size-5 ${post.hasLiked ? 'fill-current' : ''}`}
                             />
                             <span className="text-sm font-medium">
                                 {post.likeCount || 0}
@@ -125,9 +125,9 @@ const PostCard = ({ post }) => {
                         {/* Comment Button */}
                         <button
                             onClick={() => setShowComments(!showComments)}
-                            className="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition-colors"
+                            className="flex items-center gap-2 p-2 -m-2 rounded-full text-slate-400 hover:text-blue-500 transition-colors"
                         >
-                            <MessageCircleIcon className="size-5" />
+                            <MessageCircleIcon className="size-6 md:size-5" />
                             <span className="text-sm font-medium">
                                 {post.commentCount || 0}
                             </span>

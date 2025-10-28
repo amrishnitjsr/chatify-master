@@ -23,16 +23,16 @@ const StoriesSection = () => {
 
     return (
         <>
-            <div className="mb-6">
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+            <div>
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-0">
                     {/* Your Story */}
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 flex flex-col items-center">
                         <div className="relative">
                             <button
                                 onClick={handleCreateStory}
                                 className="relative block"
                             >
-                                <div className="w-16 h-16 rounded-full border-2 border-slate-600 overflow-hidden bg-slate-700 flex items-center justify-center">
+                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-slate-600 overflow-hidden bg-slate-700 flex items-center justify-center">
                                     {authUser?.profilePic ? (
                                         <img
                                             src={authUser.profilePic}
@@ -45,36 +45,36 @@ const StoriesSection = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-slate-900">
+                                <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-black md:border-slate-900">
                                     <PlusIcon className="w-3 h-3 text-white" />
                                 </div>
                             </button>
-                            <p className="text-xs text-white text-center mt-1 truncate w-16">Your story</p>
                         </div>
+                        <p className="text-xs text-white text-center mt-1 truncate w-16">Your story</p>
                     </div>
 
                     {/* Other Stories */}
                     {isLoadingStories ? (
                         // Loading skeleton
                         [...Array(5)].map((_, i) => (
-                            <div key={i} className="flex-shrink-0">
-                                <div className="w-16 h-16 rounded-full bg-slate-700 animate-pulse"></div>
-                                <div className="h-3 bg-slate-700 rounded w-12 mt-1 mx-auto animate-pulse"></div>
+                            <div key={i} className="flex-shrink-0 flex flex-col items-center">
+                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-slate-700 animate-pulse"></div>
+                                <div className="h-3 bg-slate-700 rounded w-12 mt-1 animate-pulse"></div>
                             </div>
                         ))
                     ) : (
                         stories.map((storyGroup) => (
-                            <div key={storyGroup._id} className="flex-shrink-0">
+                            <div key={storyGroup._id} className="flex-shrink-0 flex flex-col items-center">
                                 <div className="relative">
                                     <button
                                         className="relative block group"
                                         onClick={() => setCurrentStoryGroup(storyGroup)}
                                     >
-                                        <div className={`w-16 h-16 rounded-full p-0.5 ${storyGroup.hasUnseenStories
+                                        <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full p-0.5 ${storyGroup.hasUnseenStories
                                             ? 'bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600'
                                             : 'bg-gradient-to-tr from-slate-500 to-slate-400'
                                             }`}>
-                                            <div className="w-full h-full rounded-full border-2 border-slate-900 overflow-hidden">
+                                            <div className="w-full h-full rounded-full border-2 border-black md:border-slate-900 overflow-hidden">
                                                 {storyGroup.user.profilePic ? (
                                                     <img
                                                         src={storyGroup.user.profilePic}
@@ -95,10 +95,10 @@ const StoriesSection = () => {
                                             <PlayIcon className="w-6 h-6 text-white" />
                                         </div>
                                     </button>
-                                    <p className="text-xs text-white text-center mt-1 truncate w-16">
-                                        {storyGroup.user.fullName?.split(' ')[0]}
-                                    </p>
                                 </div>
+                                <p className="text-xs text-white text-center mt-1 truncate w-16">
+                                    {storyGroup.user.fullName?.split(' ')[0]}
+                                </p>
                             </div>
                         ))
                     )}

@@ -84,14 +84,41 @@ const InstagramLayout = () => {
     };
 
     return (
-        <div className="h-screen bg-slate-900 flex relative overflow-hidden">
+        <div className="h-screen bg-slate-900 flex flex-col md:flex-row relative overflow-hidden">
             {/* Background Decorators */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px]" />
             <div className="absolute top-0 -left-4 size-96 bg-pink-500 opacity-20 blur-[100px]" />
             <div className="absolute bottom-0 -right-4 size-96 bg-cyan-500 opacity-20 blur-[100px]" />
 
-            {/* Left Sidebar Navigation - Fixed height, no scroll */}
-            <div className="w-64 bg-slate-800/50 backdrop-blur-sm border-r border-slate-700/50 flex flex-col relative z-10 h-full">
+            {/* Mobile Header - Instagram Android Style */}
+            <div className="md:hidden bg-black border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Instagram Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                        Instagram
+                    </h1>
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => handleNavClick("notifications")}
+                            className="p-1 text-white relative"
+                        >
+                            <HeartIcon className="size-7" strokeWidth={1.5} />
+                        </button>
+                        <button
+                            onClick={() => setShowMessagesPanel(true)}
+                            className="p-1 text-white relative"
+                        >
+                            <MessageCircleIcon className="size-7" strokeWidth={1.5} />
+                            {/* Message count badge */}
+                            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full size-5 flex items-center justify-center">
+                                3
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Desktop Left Sidebar Navigation - Hidden on mobile */}
+            <div className="hidden md:flex w-64 bg-slate-800/50 backdrop-blur-sm border-r border-slate-700/50 flex-col relative z-10 h-full">
                 {/* Logo */}
                 <div className="p-6 border-b border-slate-700/50">
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-cyan-500 bg-clip-text text-transparent">
@@ -173,8 +200,8 @@ const InstagramLayout = () => {
                 </div>
             </div>
 
-            {/* Main Content Area - Scrollable */}
-            <div className="flex-1 flex relative z-10 h-full overflow-hidden">
+            {/* Main Content Area - Full width on mobile like Instagram */}
+            <div className="flex-1 flex relative z-10 overflow-hidden pb-16 md:pb-0 bg-black md:bg-slate-900">
                 {/* Main Feed */}
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <div className="flex-1 overflow-y-auto">
@@ -190,17 +217,82 @@ const InstagramLayout = () => {
                 )}
             </div>
 
-            {/* Floating Message Button - Hidden when messages panel is open */}
+            {/* Instagram Android Bottom Navigation */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-slate-800 z-30">
+                <div className="flex items-center justify-around px-2 py-3">
+                    {/* Home */}
+                    <button
+                        onClick={() => handleNavClick("home")}
+                        className="p-2"
+                    >
+                        <HomeIcon 
+                            className={`size-7 ${activeTab === "home" ? "text-white fill-current" : "text-white"}`} 
+                            strokeWidth={1.5}
+                        />
+                    </button>
+                    
+                    {/* Search */}
+                    <button
+                        onClick={() => handleNavClick("search")}
+                        className="p-2"
+                    >
+                        <SearchIcon 
+                            className={`size-7 ${activeTab === "search" ? "text-white" : "text-white"}`} 
+                            strokeWidth={1.5}
+                        />
+                    </button>
+                    
+                    {/* Create Post */}
+                    <button
+                        onClick={() => handleNavClick("create")}
+                        className="p-2"
+                    >
+                        <PlusSquareIcon 
+                            className={`size-7 ${activeTab === "create" ? "text-white" : "text-white"}`} 
+                            strokeWidth={1.5}
+                        />
+                    </button>
+                    
+                    {/* Reels */}
+                    <button
+                        onClick={() => handleNavClick("reels")}
+                        className="p-2"
+                    >
+                        <PlayCircleIcon 
+                            className={`size-7 ${activeTab === "reels" ? "text-white" : "text-white"}`} 
+                            strokeWidth={1.5}
+                        />
+                    </button>
+                    
+                    {/* Profile */}
+                    <button
+                        onClick={() => handleUserProfileClick(authUser?._id)}
+                        className="p-1"
+                    >
+                        <div className={`size-8 rounded-full border-2 ${activeTab === "profile" ? "border-white" : "border-transparent"}`}>
+                            <img
+                                src={authUser?.profilePic || "/avatar.png"}
+                                alt={authUser?.fullName}
+                                className="size-full rounded-full object-cover"
+                            />
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            {/* Floating Message Button - Hidden when messages panel is open or on mobile */}
             {!showMessagesPanel && (
-                <FloatingMessageButton
-                    onClick={() => setShowMessagesPanel(true)}
-                    hasUnreadMessages={false} // You can add logic to detect unread messages
-                />
+                <div className="hidden md:block">
+                    <FloatingMessageButton
+                        onClick={() => setShowMessagesPanel(true)}
+                        hasUnreadMessages={false} // You can add logic to detect unread messages
+                    />
+                </div>
             )}
 
-            {/* Messages Modal - Compact Instagram-style */}
+            {/* Messages Modal - Responsive */}
             {showMessagesPanel && (
-                <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-slate-800/95 backdrop-blur-sm rounded-2xl border border-slate-700/50 z-50 flex flex-col shadow-2xl">
+                <div className="fixed inset-0 md:bottom-6 md:right-6 md:left-auto md:top-auto md:w-96 md:h-[500px] bg-slate-800/95 backdrop-blur-sm md:rounded-2xl border-0 md:border border-slate-700/50 z-50 flex flex-col shadow-2xl">
                     {!selectedUser ? (
                         /* Chat List View */
                         <>

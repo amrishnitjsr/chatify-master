@@ -41,3 +41,29 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Instagram Android mobile responsive styles */
+@media (max-width: 768px) {
+  body {
+    background-color: #000;
+  }
+  
+  /* Full width containers on mobile */
+  .mobile-full-width {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  
+  /* Touch-friendly buttons */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Remove borders on mobile like Instagram */
+  .mobile-no-border {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+  }
+}
