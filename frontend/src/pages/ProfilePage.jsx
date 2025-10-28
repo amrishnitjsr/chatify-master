@@ -8,9 +8,9 @@ import PostCard from "../components/posts/PostCard";
 import PostsLoadingSkeleton from "../components/posts/PostsLoadingSkeleton";
 import EditProfileModal from "../components/EditProfileModal";
 import FollowersModal from "../components/FollowersModal";
-import { 
-    UserIcon, 
-    CalendarIcon, 
+import {
+    UserIcon,
+    CalendarIcon,
     RefreshCwIcon,
     ArrowLeftIcon,
     ShareIcon,
