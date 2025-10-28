@@ -67,8 +67,8 @@ app.use("/api/notifications", notificationRoutes);
 
 // Health check endpoint for deployment platforms
 app.get("/api/health", (_, res) => {
-  res.status(200).json({ 
-    status: "healthy", 
+  res.status(200).json({
+    status: "healthy",
     timestamp: new Date().toISOString(),
     service: "chatify-backend"
   });
@@ -76,8 +76,8 @@ app.get("/api/health", (_, res) => {
 
 // Basic API info endpoint
 app.get("/api", (_, res) => {
-  res.json({ 
-    message: "Chatify Backend API", 
+  res.json({
+    message: "Chatify Backend API",
     version: "1.0.0",
     status: "running"
   });
