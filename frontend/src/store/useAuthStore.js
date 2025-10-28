@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 import { config, devUtils } from "../lib/config.js";
 import useNotificationStore from "./useNotificationStore.js";
 import { useStoryStore } from "./useStoryStore.js";
+import soundManager from "../lib/soundManager.js";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -13,6 +14,7 @@ export const useAuthStore = create((set, get) => ({
   isLoggingIn: false,
   socket: null,
   onlineUsers: [],
+  notificationSoundEnabled: JSON.parse(localStorage.getItem("notificationSoundEnabled")) !== false, // Default true
 
   checkAuth: async () => {
     try {
@@ -142,6 +144,15 @@ export const useAuthStore = create((set, get) => ({
         }
       };
 
+      // Play notification sound if enabled
+      if (get().notificationSoundEnabled) {
+        if (notification.type === 'follow' || notification.type === 'unfollow') {
+          soundManager.playFollowNotification();
+        } else {
+          soundManager.playNotification();
+        }
+      }
+
       toast(`${notification.message}`, {
         icon: getIcon(notification.type),
         duration: 4000,
@@ -151,5 +162,21 @@ export const useAuthStore = create((set, get) => ({
 
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
+  },
+
+  toggleNotificationSound: () => {
+    const newValue = !get().notificationSoundEnabled;
+    localStorage.setItem("notificationSoundEnabled", JSON.stringify(newValue));
+    set({ notificationSoundEnabled: newValue });
+
+    // Play a sound to confirm the toggle (if being enabled)
+    if (newValue) {
+      soundManager.playNotification();
+    }
+
+    toast.success(`Notification sounds ${newValue ? 'enabled' : 'disabled'}`, {
+      icon: newValue ? '🔔' : '🔕',
+      duration: 2000
+    });
   },
 }));

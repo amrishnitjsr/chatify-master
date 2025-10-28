@@ -26,6 +26,7 @@ import ContactList from "./ContactList";
 import ActiveTabSwitch from "./ActiveTabSwitch";
 import FloatingMessageButton from "./FloatingMessageButton";
 import SuggestedUsers from "./SuggestedUsers";
+import SoundSettings from "./SoundSettings";
 import { useChatStore } from "../store/useChatStore";
 
 const InstagramLayout = () => {
@@ -109,8 +110,8 @@ const InstagramLayout = () => {
                                 key={item.id}
                                 onClick={() => handleNavClick(item.id)}
                                 className={`w-full flex items-center gap-4 px-6 py-3 text-left transition-colors ${isActive
-                                        ? "text-white bg-slate-700/50"
-                                        : "text-slate-300 hover:text-white hover:bg-slate-700/30"
+                                    ? "text-white bg-slate-700/50"
+                                    : "text-slate-300 hover:text-white hover:bg-slate-700/30"
                                     }`}
                             >
                                 <Icon className="size-6" />
@@ -206,12 +207,15 @@ const InstagramLayout = () => {
                             {/* Messages Header */}
                             <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
                                 <h2 className="text-white font-semibold text-lg">Messages</h2>
-                                <button
-                                    onClick={() => setShowMessagesPanel(false)}
-                                    className="text-slate-400 hover:text-white p-1 hover:bg-slate-700/50 rounded-full transition-colors"
-                                >
-                                    <XIcon className="size-5" />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <SoundSettings compact={true} />
+                                    <button
+                                        onClick={() => setShowMessagesPanel(false)}
+                                        className="text-slate-400 hover:text-white p-1 hover:bg-slate-700/50 rounded-full transition-colors"
+                                    >
+                                        <XIcon className="size-5" />
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Active Tab Switch */}

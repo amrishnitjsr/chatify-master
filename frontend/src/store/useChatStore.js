@@ -3,6 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
 import { devUtils } from "../lib/config.js";
+import soundManager from "../lib/soundManager.js";
 
 export const useChatStore = create((set, get) => ({
   allContacts: [],
@@ -16,8 +17,19 @@ export const useChatStore = create((set, get) => ({
   isSoundEnabled: JSON.parse(localStorage.getItem("isSoundEnabled")) === true,
 
   toggleSound: () => {
-    localStorage.setItem("isSoundEnabled", !get().isSoundEnabled);
-    set({ isSoundEnabled: !get().isSoundEnabled });
+    const newValue = !get().isSoundEnabled;
+    localStorage.setItem("isSoundEnabled", newValue);
+    set({ isSoundEnabled: newValue });
+
+    // Play a sound to confirm the toggle (if being enabled)
+    if (newValue) {
+      soundManager.playMessageSent();
+    }
+
+    toast.success(`Message sounds ${newValue ? 'enabled' : 'disabled'}`, {
+      icon: newValue ? '🔊' : '🔇',
+      duration: 2000
+    });
   },
 
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -96,6 +108,11 @@ export const useChatStore = create((set, get) => ({
       // Refresh chat partners list (in case this was the first message to this user)
       get().getMyChatPartners();
 
+      // Play message sent sound
+      if (get().isSoundEnabled) {
+        soundManager.playMessageSent();
+      }
+
       devUtils.log('✅ Message sent successfully');
     } catch (error) {
       // Remove optimistic message on failure
@@ -121,10 +138,7 @@ export const useChatStore = create((set, get) => ({
       set({ messages: [...currentMessages, newMessage] });
 
       if (isSoundEnabled) {
-        const notificationSound = new Audio("/sounds/notification.mp3");
-
-        notificationSound.currentTime = 0; // reset to start
-        notificationSound.play().catch((e) => console.log("Audio play failed:", e));
+        soundManager.playMessageReceived();
       }
     });
   },

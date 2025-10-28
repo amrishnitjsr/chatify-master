@@ -132,7 +132,7 @@ const ProfilePage = ({ userId: propUserId }) => {
                                         >
                                             {isToggling ? "..." : isUserFollowing ? "Following" : "Follow"}
                                         </button>
-                                        <button 
+                                        <button
                                             onClick={handleMessageUser}
                                             className="bg-slate-600 hover:bg-slate-500 text-white px-6 py-1.5 rounded-lg font-semibold transition-colors"
                                         >

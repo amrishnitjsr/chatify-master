@@ -1,0 +1,35 @@
+{
+    "name": "Chatify - Instagram-like Chat App",
+    "short_name": "Chatify",
+    "description": "Modern Instagram-like chat application with stories, posts, and real-time messaging",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#06b6d4",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/chatify-icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon.svg",
+            "sizes": "32x32",
+            "type": "image/svg+xml"
+        }
+    ],
+    "categories": [
+        "social",
+        "communication"
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot-for-readme.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        }
+    ]
+}

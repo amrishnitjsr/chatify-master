@@ -1,16 +1,22 @@
 {
-  "name": "backend",
+  "name": "chatify-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend API for Chatify - Instagram-like chat application",
+  "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "chat",
+    "instagram",
+    "social-media",
+    "messaging",
+    "stories"
+  ],
   "type": "module",
-  "author": "",
+  "author": "Chatify Team",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@arcjet/inspect": "^1.0.0-beta.10",
     "@arcjet/node": "^1.0.0-beta.10",
