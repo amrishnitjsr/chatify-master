@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import InstagramLayout from "./components/InstagramLayout";
 import ProfilePage from "./pages/ProfilePage";
+import StoryViewer from "./components/StoryViewer";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import PageLoader from "./components/PageLoader";
@@ -43,6 +44,9 @@ function App() {
           <Route path="*" element={<Navigate to={"/login"} />} />
         )}
       </Routes>
+
+      {/* Global Story Viewer */}
+      <StoryViewer />
 
       <Toaster />
     </>

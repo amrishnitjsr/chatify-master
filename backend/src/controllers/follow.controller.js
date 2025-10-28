@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import { createNotification } from "./notification.controller.js";
 
 // Follow/Unfollow a user
 export const toggleFollow = async (req, res) => {
@@ -31,6 +32,16 @@ export const toggleFollow = async (req, res) => {
                 $pull: { followers: currentUserId }
             });
 
+            // Send unfollow notification
+            await createNotification({
+                recipientId: userId,
+                senderId: currentUserId,
+                type: "unfollow",
+                message: `${currentUser.fullName} unfollowed you`,
+                entityId: currentUserId,
+                entityType: "user"
+            });
+
             res.status(200).json({
                 message: "User unfollowed successfully",
                 isFollowing: false,
@@ -44,6 +55,16 @@ export const toggleFollow = async (req, res) => {
             });
             await User.findByIdAndUpdate(userId, {
                 $push: { followers: currentUserId }
+            });
+
+            // Send follow notification
+            await createNotification({
+                recipientId: userId,
+                senderId: currentUserId,
+                type: "follow",
+                message: `${currentUser.fullName} started following you`,
+                entityId: currentUserId,
+                entityType: "user"
             });
 
             res.status(200).json({

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
+import { Smile } from "lucide-react";
+import CategoryEmojiPicker from "./CategoryEmojiPicker";
 
 function CompactChatContainer() {
     const {
@@ -16,6 +18,25 @@ function CompactChatContainer() {
     const { authUser } = useAuthStore();
     const messageEndRef = useRef(null);
     const [newMessage, setNewMessage] = useState("");
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const emojiPickerRef = useRef(null);
+
+    // Close emoji picker when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        if (showEmojiPicker) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showEmojiPicker]);
 
     useEffect(() => {
         if (selectedUser?._id) {
@@ -47,6 +68,18 @@ function CompactChatContainer() {
         }
     };
 
+    const handleEmojiSelect = (emoji) => {
+        setNewMessage(prev => prev + emoji);
+    };
+
+    const toggleEmojiPicker = () => {
+        setShowEmojiPicker(prev => !prev);
+    };
+
+    const closeEmojiPicker = () => {
+        setShowEmojiPicker(false);
+    };
+
     if (!selectedUser) return null;
 
     return (
@@ -62,8 +95,8 @@ function CompactChatContainer() {
                             >
                                 <div
                                     className={`max-w-[70%] rounded-2xl px-3 py-2 ${msg.senderId === authUser._id
-                                            ? "bg-blue-500 text-white"
-                                            : "bg-slate-700 text-slate-200"
+                                        ? "bg-blue-500 text-white"
+                                        : "bg-slate-700 text-slate-200"
                                         }`}
                                 >
                                     {msg.image && (
@@ -74,7 +107,7 @@ function CompactChatContainer() {
                                         />
                                     )}
                                     {msg.text && (
-                                        <p className="text-sm break-words">{msg.text}</p>
+                                        <p className="text-sm break-words leading-relaxed">{msg.text}</p>
                                     )}
                                     <p className="text-xs mt-1 opacity-75">
                                         {new Date(msg.createdAt).toLocaleTimeString(undefined, {
@@ -100,7 +133,7 @@ function CompactChatContainer() {
             </div>
 
             {/* Message Input */}
-            <div className="p-3 border-t border-slate-700/50">
+            <div className="p-3 border-t border-slate-700/50 relative">
                 <form onSubmit={handleSendMessage} className="flex gap-2">
                     <input
                         type="text"
@@ -109,6 +142,25 @@ function CompactChatContainer() {
                         placeholder="Message..."
                         className="flex-1 bg-slate-700/50 border border-slate-600 rounded-full px-4 py-2 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500 transition-colors"
                     />
+
+                    {/* Emoji Picker */}
+                    <div className="relative" ref={emojiPickerRef}>
+                        <button
+                            type="button"
+                            onClick={toggleEmojiPicker}
+                            className={`p-2 rounded-full transition-colors ${showEmojiPicker ? 'text-blue-400 bg-slate-600' : 'text-slate-400 hover:text-slate-200'
+                                }`}
+                        >
+                            <Smile className="w-5 h-5" />
+                        </button>
+
+                        <CategoryEmojiPicker
+                            isOpen={showEmojiPicker}
+                            onEmojiSelect={handleEmojiSelect}
+                            onClose={closeEmojiPicker}
+                        />
+                    </div>
+
                     <button
                         type="submit"
                         disabled={!newMessage.trim()}

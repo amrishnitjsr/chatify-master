@@ -3,6 +3,8 @@ import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { config, devUtils } from "../lib/config.js";
+import useNotificationStore from "./useNotificationStore.js";
+import { useStoryStore } from "./useStoryStore.js";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -17,6 +19,14 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
       get().connectSocket();
+
+      // Initialize notifications
+      const { fetchUnreadCount } = useNotificationStore.getState();
+      fetchUnreadCount();
+
+      // Start story refresh
+      const { startStoryRefresh } = useStoryStore.getState();
+      startStoryRefresh();
     } catch (error) {
       console.log("Error in authCheck:", error);
       set({ authUser: null });
@@ -33,6 +43,14 @@ export const useAuthStore = create((set, get) => ({
 
       toast.success("Account created successfully!");
       get().connectSocket();
+
+      // Initialize notifications
+      const { fetchUnreadCount } = useNotificationStore.getState();
+      fetchUnreadCount();
+
+      // Start story refresh
+      const { startStoryRefresh } = useStoryStore.getState();
+      startStoryRefresh();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -49,6 +67,14 @@ export const useAuthStore = create((set, get) => ({
       toast.success("Logged in successfully");
 
       get().connectSocket();
+
+      // Initialize notifications
+      const { fetchUnreadCount } = useNotificationStore.getState();
+      fetchUnreadCount();
+
+      // Start story refresh
+      const { startStoryRefresh } = useStoryStore.getState();
+      startStoryRefresh();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -62,6 +88,10 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: null });
       toast.success("Logged out successfully");
       get().disconnectSocket();
+
+      // Stop story refresh and clear data
+      const { clearStoryData } = useStoryStore.getState();
+      clearStoryData();
     } catch (error) {
       toast.error("Error logging out");
       console.log("Logout error:", error);
@@ -94,6 +124,28 @@ export const useAuthStore = create((set, get) => ({
     // listen for online users event
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
+    });
+
+    // listen for new notifications
+    socket.on("newNotification", (notification) => {
+      const { addNotification } = useNotificationStore.getState();
+      addNotification(notification);
+
+      // Show toast notification based on type
+      const getIcon = (type) => {
+        switch (type) {
+          case 'follow': return '👤';
+          case 'unfollow': return '🚶';
+          case 'message': return '💬';
+          case 'profile_view': return '👁️';
+          default: return '🔔';
+        }
+      };
+
+      toast(`${notification.message}`, {
+        icon: getIcon(notification.type),
+        duration: 4000,
+      });
     });
   },
 

@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import { ENV } from "../lib/env.js";
 import cloudinary from "../lib/cloudinary.js";
+import { createNotification } from "./notification.controller.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -180,6 +181,7 @@ export const updateProfile = async (req, res) => {
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
+    const viewerId = req.user?._id; // Current user viewing the profile
 
     const user = await User.findById(userId)
       .select("-password")
@@ -188,6 +190,21 @@ export const getUserProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    // Send profile view notification (only if viewing someone else's profile)
+    if (viewerId && viewerId.toString() !== userId) {
+      const viewer = await User.findById(viewerId).select('fullName');
+      if (viewer) {
+        await createNotification({
+          recipientId: userId,
+          senderId: viewerId,
+          type: "profile_view",
+          message: `${viewer.fullName} viewed your profile`,
+          entityId: viewerId,
+          entityType: "user"
+        });
+      }
     }
 
     res.status(200).json({

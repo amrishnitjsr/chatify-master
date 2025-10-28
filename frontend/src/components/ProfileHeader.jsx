@@ -3,6 +3,7 @@ import { LogOutIcon, VolumeOffIcon, Volume2Icon, ShieldCheckIcon } from "lucide-
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { config } from "../lib/config.js";
+import NotificationButton from "./NotificationButton";
 
 const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 
@@ -75,7 +76,12 @@ function ProfileHeader() {
         </div>
 
         {/* BUTTONS */}
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-2 items-center">
+          {/* NOTIFICATIONS BTN */}
+          <div className="text-slate-400 hover:text-slate-200 transition-colors">
+            <NotificationButton />
+          </div>
+
           {/* LOGOUT BTN */}
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"

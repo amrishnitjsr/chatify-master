@@ -3,6 +3,7 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
 import { encryptMessage, decryptMessage, validateEncryptionConfig } from "../lib/encryption.js";
+import { createNotification } from "./notification.controller.js";
 
 export const getAllContacts = async (req, res) => {
   try {
@@ -109,6 +110,26 @@ export const sendMessage = async (req, res) => {
     });
 
     await newMessage.save();
+
+    // Send notification to receiver
+    try {
+      const sender = await User.findById(senderId).select('fullName username');
+      const messagePreview = text ? (text.length > 50 ? text.substring(0, 50) + "..." : text) : "Sent an image";
+
+      await createNotification({
+        recipientId: receiverId,
+        senderId: senderId,
+        type: 'message',
+        message: `${sender.fullName} sent you a message: ${messagePreview}`,
+        metadata: {
+          senderUsername: sender.username,
+          messagePreview: messagePreview
+        }
+      });
+    } catch (notificationError) {
+      console.log("Error creating message notification:", notificationError.message);
+      // Don't fail the message send if notification fails
+    }
 
     // Prepare the message for real-time transmission (with decrypted text)
     const messageForTransmission = {

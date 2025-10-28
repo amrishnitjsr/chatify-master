@@ -7,9 +7,12 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import postRoutes from "./routes/post.route.js";
 import followRoutes from "./routes/follow.route.js";
+import storyRoutes from "./routes/story.route.js";
+import notificationRoutes from "./routes/notification.route.js";
 import { connectDB } from "./lib/db.js";
 import { ENV } from "./lib/env.js";
 import { app, server } from "./lib/socket.js";
+import { initializeStoryCleanup } from "./lib/storyCleanup.js";
 
 const __dirname = path.resolve();
 
@@ -23,6 +26,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/follow", followRoutes);
+app.use("/api/stories", storyRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // make ready for deployment
 if (ENV.NODE_ENV === "production") {
@@ -36,4 +41,7 @@ if (ENV.NODE_ENV === "production") {
 server.listen(PORT, () => {
   console.log("Server running on port: " + PORT);
   connectDB();
+
+  // Initialize story cleanup jobs
+  initializeStoryCleanup();
 });
