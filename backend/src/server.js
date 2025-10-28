@@ -63,11 +63,14 @@ app.use("/api/stories", storyRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 // make ready for deployment
+// make ready for deployment
 if (ENV.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // SAHI PATH: Do level upar jaakar frontend/dist tak
+  app.use(express.static(path.join(__dirname, "../../frontend/dist"))); 
 
   app.get("*", (_, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    // SAHI PATH: Do level upar jaakar frontend/dist/index.html tak
+    res.sendFile(path.join(__dirname, "../../frontend", "dist", "index.html")); 
   });
 }
 
