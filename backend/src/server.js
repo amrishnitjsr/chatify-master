@@ -19,7 +19,41 @@ const __dirname = path.resolve();
 const PORT = ENV.PORT || 3000;
 
 app.use(express.json({ limit: "5mb" })); // req.body
-app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
+
+// Configure CORS to allow multiple origins
+const allowedOrigins = [
+  ENV.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000', 
+  'http://127.0.0.1:5173',
+  'https://social-media-a31j.onrender.com'
+];
+
+console.log('🌐 CORS Configuration - Allowed Origins:', allowedOrigins);
+console.log('🌐 CLIENT_URL from ENV:', ENV.CLIENT_URL);
+
+app.use(cors({ 
+  origin: (origin, callback) => {
+    console.log('🌐 CORS Origin Request:', origin);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('🌐 CORS: Allowing request with no origin');
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Allowing origin:', origin);
+      callback(null, true);
+    } else {
+      console.log('❌ CORS: Blocking origin:', origin, 'Allowed:', allowedOrigins.join(', '));
+      callback(new Error(`Not allowed by CORS. Origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200 // Support legacy browsers
+}));
+
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);

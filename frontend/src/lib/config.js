@@ -48,7 +48,7 @@ function getApiBaseUrl() {
 
     // Default behavior based on mode
     return import.meta.env.MODE === "development"
-        ? "http://localhost:3000/api"
+        ? "https://social-media-a31j.onrender.com/api"
         : "/api";
 }
 
@@ -63,7 +63,7 @@ function getSocketUrl() {
 
     // Default behavior based on mode
     return import.meta.env.MODE === "development"
-        ? "http://localhost:3000"
+        ? "https://social-media-a31j.onrender.com"
         : "/";
 }
 

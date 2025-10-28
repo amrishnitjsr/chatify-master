@@ -2,6 +2,16 @@
 
 This guide helps you deploy Chatify to production environments by managing environment variables effectively.
 
+## 🔗 Deployed Backend URL
+Your backend is deployed at: `https://social-media-a31j.onrender.com`
+
+## 🛡️ CORS Configuration
+The backend has been configured to allow requests from multiple origins:
+- `http://localhost:5173` (Local frontend development)
+- `http://localhost:3000` (Local backend development) 
+- `https://social-media-a31j.onrender.com` (Your deployed backend)
+- Any CLIENT_URL specified in environment variables
+
 ## 📁 Environment Files Structure
 
 ```
@@ -199,6 +209,31 @@ After updating `.env` files, redeploy your applications.
 3. **API 404 Errors**: Check `VITE_API_BASE_URL` path
 4. **Database Connection**: Verify MongoDB URI and network access
 5. **Authentication Issues**: Check JWT secret consistency
+
+### Authentication & Cookie Issues
+
+If you get 401 (Unauthorized) errors after successful login:
+
+1. **Cross-Origin Cookies**: 
+   - Backend automatically configures cookies for cross-origin in production
+   - Uses `sameSite: "none"` and `secure: true` for HTTPS
+   - Requires `credentials: true` in CORS (already configured)
+
+2. **Browser Cookie Debugging**:
+   - Open DevTools → Application → Cookies
+   - Check if `jwt` cookie is present after login
+   - Verify cookie `SameSite` and `Secure` flags
+
+3. **Network Debugging**:
+   - Check Network tab for failed requests
+   - Look for missing `Cookie` header in request headers
+   - Verify `Set-Cookie` header in login response
+
+4. **Common Fixes**:
+   - Clear browser cookies and local storage
+   - Ensure frontend uses HTTPS in production (for secure cookies)
+   - Verify `CLIENT_URL` includes correct protocol (https://)
+   - Check backend logs for CORS and cookie setting messages
 
 ### Debug Mode
 
