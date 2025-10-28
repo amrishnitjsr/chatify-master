@@ -45,6 +45,7 @@ const NotificationsPage = () => {
                 break;
             case 'post_like':
             case 'post_comment':
+            case 'post_share':
                 if (notification.entityId) {
                     // Navigate to post - for now go to home
                     navigate('/');
@@ -69,6 +70,8 @@ const NotificationsPage = () => {
                 return <HeartIcon className="size-8 text-red-500 fill-current" />;
             case "post_comment":
                 return <MessageCircleIcon className="size-8 text-blue-500" />;
+            case "post_share":
+                return <BellIcon className="size-8 text-cyan-500 fill-current" />;
             case "story_view":
                 return <EyeIcon className="size-8 text-indigo-500" />;
             default:
@@ -81,11 +84,28 @@ const NotificationsPage = () => {
         const notificationDate = new Date(date);
         const diffInSeconds = Math.floor((now - notificationDate) / 1000);
 
-        if (diffInSeconds < 60) return 'now';
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`;
-        return notificationDate.toLocaleDateString();
+        if (diffInSeconds < 60) return 'just now';
+        if (diffInSeconds < 3600) {
+            const mins = Math.floor(diffInSeconds / 60);
+            return `${mins}m ago`;
+        }
+        if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return `${hours}h ago`;
+        }
+        if (diffInSeconds < 604800) {
+            const days = Math.floor(diffInSeconds / 86400);
+            return `${days}d ago`;
+        }
+        
+        // Show exact date for older notifications
+        const options = {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return notificationDate.toLocaleDateString('en-US', options);
     };
 
     const filteredNotifications = notifications.filter(notif => {
@@ -246,6 +266,31 @@ const NotificationsPage = () => {
                                     {notification.metadata?.messageText && (
                                         <div className="mt-2 p-2 bg-slate-800 rounded text-sm text-slate-300">
                                             "{notification.metadata.messageText}"
+                                        </div>
+                                    )}
+                                    
+                                    {/* Post content preview for post_share notifications */}
+                                    {notification.type === 'post_share' && notification.metadata && (
+                                        <div className="mt-2 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                                            <div className="flex items-start gap-3">
+                                                {notification.metadata.postImage && (
+                                                    <img 
+                                                        src={notification.metadata.postImage} 
+                                                        alt="Post preview" 
+                                                        className="w-12 h-12 rounded object-cover flex-shrink-0"
+                                                    />
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    {notification.metadata.postText && (
+                                                        <p className="text-sm text-slate-300 line-clamp-2">
+                                                            {notification.metadata.postText}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs text-slate-500 mt-1">
+                                                        Tap to view post
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

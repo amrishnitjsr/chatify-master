@@ -2,6 +2,8 @@ import cloudinary from "../lib/cloudinary.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Comment from "../models/Comment.js";
+import Notification from "../models/Notification.js";
+import { io } from "../lib/socket.js";
 
 // Create a new post
 export const createPost = async (req, res) => {
@@ -81,6 +83,48 @@ export const createPost = async (req, res) => {
 
         // Populate user information for response
         await newPost.populate('userId', 'fullName profilePic');
+
+        // Notify followers about new post
+        try {
+            const user = await User.findById(userId).select('fullName profilePic followers');
+            
+            if (user && user.followers && user.followers.length > 0) {
+                console.log(`📢 Notifying ${user.followers.length} followers about new post`);
+                
+                // Create notifications for all followers
+                const notificationPromises = user.followers.map(async (followerId) => {
+                    const notification = new Notification({
+                        recipient: followerId,
+                        sender: userId,
+                        type: "post_share",
+                        message: `${user.fullName} shared a new post`,
+                        entityId: newPost._id,
+                        entityType: "post",
+                        metadata: {
+                            postImage: imageUrl,
+                            postText: text?.substring(0, 100) // First 100 characters
+                        }
+                    });
+
+                    await notification.save();
+                    await notification.populate('sender', 'fullName profilePic username');
+                    
+                    // Send real-time notification via socket
+                    io.to(followerId.toString()).emit("notification", {
+                        ...notification.toObject(),
+                        timestamp: notification.createdAt
+                    });
+
+                    return notification;
+                });
+
+                await Promise.all(notificationPromises);
+                console.log("✅ Follower notifications sent successfully");
+            }
+        } catch (notificationError) {
+            console.error("Error sending follower notifications:", notificationError);
+            // Don't fail the post creation if notifications fail
+        }
 
         res.status(201).json(newPost);
     } catch (error) {

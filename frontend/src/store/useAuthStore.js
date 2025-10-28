@@ -139,23 +139,12 @@ export const useAuthStore = create((set, get) => ({
       set({ onlineUsers: userIds });
     });
 
-    // listen for new notifications
+    // listen for new notifications (both events for compatibility)
     socket.on("newNotification", (notification) => {
       const { addNotification } = useNotificationStore.getState();
       addNotification(notification);
 
-      // Show toast notification based on type
-      const getIcon = (type) => {
-        switch (type) {
-          case 'follow': return '👤';
-          case 'unfollow': return '🚶';
-          case 'message': return '💬';
-          case 'profile_view': return '👁️';
-          default: return '🔔';
-        }
-      };
-
-      // Play notification sound if enabled
+      // Play notification sound if enabled (no popup toast)
       if (get().notificationSoundEnabled) {
         if (notification.type === 'follow' || notification.type === 'unfollow') {
           soundManager.playFollowNotification();
@@ -164,10 +153,24 @@ export const useAuthStore = create((set, get) => ({
         }
       }
 
-      toast(`${notification.message}`, {
-        icon: getIcon(notification.type),
-        duration: 4000,
-      });
+      console.log("📬 New notification received:", notification.message);
+    });
+
+    // Also listen for the "notification" event from backend
+    socket.on("notification", (notification) => {
+      const { addNotification } = useNotificationStore.getState();
+      addNotification(notification);
+
+      // Play notification sound if enabled (no popup toast)
+      if (get().notificationSoundEnabled) {
+        if (notification.type === 'follow' || notification.type === 'unfollow' || notification.type === 'post_share') {
+          soundManager.playFollowNotification();
+        } else {
+          soundManager.playNotification();
+        }
+      }
+
+      console.log("📬 Real-time notification received:", notification.message);
     });
   },
 

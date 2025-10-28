@@ -21,7 +21,8 @@ const notificationSchema = new mongoose.Schema(
                 "message",
                 "story_view",
                 "post_like",
-                "post_comment"
+                "post_comment",
+                "post_share"
             ],
             required: true,
         },
