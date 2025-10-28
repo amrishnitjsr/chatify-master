@@ -43,7 +43,7 @@ const HomePage = () => {
 
     return (
         <div className="h-full overflow-y-auto bg-black md:bg-slate-900">
-            {/* Stories Section - Full width on mobile like Instagram */}
+            {/* Stories Section - Full width on mobile like Chatify */}
             <div className="border-b border-slate-800 md:border-slate-700 bg-black md:bg-transparent">
                 <div className="p-4 md:p-6 md:max-w-2xl md:mx-auto">
                     <StoriesSection />

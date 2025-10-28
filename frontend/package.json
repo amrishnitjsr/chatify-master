@@ -2,7 +2,7 @@
   "name": "chatify-frontend",
   "private": true,
   "version": "1.0.0",
-  "description": "Chatify - Modern Instagram-like chat application with stories, posts, and real-time messaging",
+  "description": "Chatify - Modern social media chat application with stories, posts, and real-time messaging",
   "type": "module",
   "scripts": {
     "dev": "vite",

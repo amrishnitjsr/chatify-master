@@ -109,7 +109,7 @@ const ProfilePage = ({ userId: propUserId }) => {
             setSelectedUser(profileUser);
             // Switch to messages tab
             setActiveTab("chats");
-            // Navigate to home (which shows the Instagram layout with chat)
+            // Navigate to home (which shows the Chatify layout with chat)
             navigate("/");
         }
     };
@@ -124,7 +124,7 @@ const ProfilePage = ({ userId: propUserId }) => {
 
     return (
         <div className="h-full overflow-y-auto bg-black md:bg-slate-900">
-            {/* Mobile Header - Instagram Style */}
+            {/* Mobile Header - Chatify Style */}
             <div className="md:hidden bg-black border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -331,7 +331,7 @@ const ProfilePage = ({ userId: propUserId }) => {
                         {/* Posts Tab */}
                         {profileTab === "posts" && (
                             <>
-                                {/* Instagram-Style Posts Grid */}
+                                {/* Chatify-Style Posts Grid */}
                                 <div className="grid grid-cols-3 gap-1 md:gap-4">
                                     {userPosts.length === 0 ? (
                                         <div className="col-span-3 text-center py-16">

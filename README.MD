@@ -1,4 +1,4 @@
-<h1 align="center">✨ Full-Stack Chat App with Auth & Emails ✨</h1>
+<h1 align="center">✨ Chatify - Modern Social Media Chat App ✨</h1>
 
 ![Demo App](/frontend/public/screenshot-for-readme.png)
 

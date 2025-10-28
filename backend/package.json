@@ -1,7 +1,7 @@
 {
   "name": "chatify-backend",
   "version": "1.0.0",
-  "description": "Backend API for Chatify - Instagram-like chat application",
+  "description": "Backend API for Chatify - Modern social media chat application",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
@@ -9,7 +9,7 @@
   },
   "keywords": [
     "chat",
-    "instagram",
+    "chatify",
     "social-media",
     "messaging",
     "stories"

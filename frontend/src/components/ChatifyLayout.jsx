@@ -30,7 +30,7 @@ import SuggestedUsers from "./SuggestedUsers";
 import SoundSettings from "./SoundSettings";
 import { useChatStore } from "../store/useChatStore";
 
-const InstagramLayout = () => {
+const ChatifyLayout = () => {
     const { authUser, logout, onlineUsers } = useAuthStore();
     const { selectedUser } = useChatStore();
     const { unreadCount, fetchUnreadCount } = useNotificationStore();
@@ -99,11 +99,11 @@ const InstagramLayout = () => {
             <div className="absolute top-0 -left-4 size-96 bg-pink-500 opacity-20 blur-[100px]" />
             <div className="absolute bottom-0 -right-4 size-96 bg-cyan-500 opacity-20 blur-[100px]" />
 
-            {/* Mobile Header - Instagram Android Style */}
+            {/* Mobile Header - Chatify Android Style */}
             <div className="md:hidden bg-black border-b border-slate-800 px-4 py-3 sticky top-0 z-40">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Instagram Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
-                        Instagram
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-cyan-500 bg-clip-text text-transparent" style={{ fontFamily: 'Chatify Sans, -apple-system, BlinkMacSystemFont, sans-serif' }}>
+                        Chatify
                     </h1>
                     <div className="flex items-center gap-4">
                         <button
@@ -157,6 +157,11 @@ const InstagramLayout = () => {
                             >
                                 <Icon className="size-6" />
                                 <span className="font-medium">{item.label}</span>
+                                {item.id === "notifications" && unreadCount > 0 && (
+                                    <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                                        {unreadCount > 9 ? '9+' : unreadCount}
+                                    </span>
+                                )}
                             </button>
                         );
                     })}
@@ -214,7 +219,7 @@ const InstagramLayout = () => {
                 </div>
             </div>
 
-            {/* Main Content Area - Full width on mobile like Instagram */}
+            {/* Main Content Area - Full width on mobile like Chatify */}
             <div className="flex-1 flex relative z-10 overflow-hidden pb-16 md:pb-0 bg-black md:bg-slate-900">
                 {/* Main Feed */}
                 <div className="flex-1 flex flex-col overflow-hidden">
@@ -231,7 +236,7 @@ const InstagramLayout = () => {
                 )}
             </div>
 
-            {/* Instagram Android Bottom Navigation */}
+            {/* Chatify Android Bottom Navigation */}
             <div className="md:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-slate-800 z-30">
                 <div className="flex items-center justify-around px-2 py-3">
                     {/* Home */}
@@ -395,4 +400,4 @@ const InstagramLayout = () => {
     );
 };
 
-export default InstagramLayout;
+export default ChatifyLayout;

@@ -8,7 +8,7 @@ const ReelsPage = () => {
     const [likedReels, setLikedReels] = useState(new Set());
     const videoRef = useRef(null);
 
-    // Instagram-style sample reels data
+    // Chatify-style sample reels data
     const sampleReels = [
         {
             id: 1,

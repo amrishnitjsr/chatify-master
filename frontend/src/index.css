@@ -42,7 +42,7 @@
   display: none;
 }
 
-/* Instagram Android mobile responsive styles */
+/* Chatify Android mobile responsive styles */
 @media (max-width: 768px) {
   body {
     background-color: #000;
@@ -60,7 +60,7 @@
     min-width: 44px;
   }
   
-  /* Remove borders on mobile like Instagram */
+  /* Remove borders on mobile like Chatify */
   .mobile-no-border {
     border-left: none !important;
     border-right: none !important;

@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
-import InstagramLayout from "./components/InstagramLayout";
+import ChatifyLayout from "./components/ChatifyLayout";
 import ProfilePage from "./pages/ProfilePage";
 import StoryViewer from "./components/StoryViewer";
 import { useAuthStore } from "./store/useAuthStore";
@@ -29,8 +29,8 @@ function App() {
         {/* Protected Routes */}
         {authUser ? (
           <>
-            {/* Main Instagram-like layout */}
-            <Route path="/" element={<InstagramLayout />} />
+            {/* Main Chatify layout */}
+            <Route path="/" element={<ChatifyLayout />} />
 
             {/* Individual profile pages for direct links */}
             <Route path="/profile/:userId" element={<ProfilePage />} />
