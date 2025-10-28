@@ -326,161 +326,161 @@ const ProfilePage = ({ userId: propUserId }) => {
                     </div>
                 </div>
 
-            {/* Content Based on Active Tab */}
-            <div className="px-0 md:px-0">
+                {/* Content Based on Active Tab */}
+                <div className="px-0 md:px-0">
 
-                {/* Posts Loading State */}
-                {isUserPostsLoading && userPosts.length === 0 ? (
-                    <PostsLoadingSkeleton />
-                ) : (
-                    <>
-                        {/* Posts Tab */}
-                        {profileTab === "posts" && (
-                            <>
-                                {/* Chatify-Style Posts Grid */}
-                                <div className="grid grid-cols-3 gap-1 md:gap-4">
-                                    {userPosts.length === 0 ? (
-                                        <div className="col-span-3 text-center py-16 px-4">
-                                            {/* Android-style illustration */}
-                                            <div className="mx-auto mb-8 relative">
-                                                <svg width="200" height="120" viewBox="0 0 200 120" className="mx-auto">
-                                                    {/* Left hand */}
-                                                    <path d="M20 50 Q30 30, 50 35 Q70 40, 80 55 Q85 65, 80 75 Q70 85, 50 80 Q30 75, 20 50Z" 
-                                                          fill="#D4A574" stroke="#C4956A" strokeWidth="2"/>
-                                                    
-                                                    {/* Right hand */}
-                                                    <path d="M180 50 Q170 30, 150 35 Q130 40, 120 55 Q115 65, 120 75 Q130 85, 150 80 Q170 75, 180 50Z" 
-                                                          fill="#D4A574" stroke="#C4956A" strokeWidth="2"/>
-                                                    
-                                                    {/* Heart shape formed by hands */}
-                                                    <path d="M80 60 Q100 40, 120 60 Q100 80, 80 60Z" 
-                                                          fill="none" stroke="#E91E63" strokeWidth="3" strokeDasharray="5,5">
-                                                        <animate attributeName="stroke-dashoffset" values="10;0;10" dur="2s" repeatCount="indefinite"/>
-                                                    </path>
-                                                    
-                                                    {/* Fingers details */}
-                                                    <ellipse cx="45" cy="45" rx="8" ry="12" fill="#D4A574" stroke="#C4956A" strokeWidth="1"/>
-                                                    <ellipse cx="155" cy="45" rx="8" ry="12" fill="#D4A574" stroke="#C4956A" strokeWidth="1"/>
-                                                    
-                                                    {/* Sparkles */}
-                                                    <g fill="#FFD700">
-                                                        <circle cx="60" cy="30" r="2">
-                                                            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0s"/>
-                                                        </circle>
-                                                        <circle cx="140" cy="25" r="2">
-                                                            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0.5s"/>
-                                                        </circle>
-                                                        <circle cx="100" cy="20" r="2">
-                                                            <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="1s"/>
-                                                        </circle>
-                                                    </g>
-                                                </svg>
+                    {/* Posts Loading State */}
+                    {isUserPostsLoading && userPosts.length === 0 ? (
+                        <PostsLoadingSkeleton />
+                    ) : (
+                        <>
+                            {/* Posts Tab */}
+                            {profileTab === "posts" && (
+                                <>
+                                    {/* Chatify-Style Posts Grid */}
+                                    <div className="grid grid-cols-3 gap-1 md:gap-4">
+                                        {userPosts.length === 0 ? (
+                                            <div className="col-span-3 text-center py-16 px-4">
+                                                {/* Android-style illustration */}
+                                                <div className="mx-auto mb-8 relative">
+                                                    <svg width="200" height="120" viewBox="0 0 200 120" className="mx-auto">
+                                                        {/* Left hand */}
+                                                        <path d="M20 50 Q30 30, 50 35 Q70 40, 80 55 Q85 65, 80 75 Q70 85, 50 80 Q30 75, 20 50Z"
+                                                            fill="#D4A574" stroke="#C4956A" strokeWidth="2" />
+
+                                                        {/* Right hand */}
+                                                        <path d="M180 50 Q170 30, 150 35 Q130 40, 120 55 Q115 65, 120 75 Q130 85, 150 80 Q170 75, 180 50Z"
+                                                            fill="#D4A574" stroke="#C4956A" strokeWidth="2" />
+
+                                                        {/* Heart shape formed by hands */}
+                                                        <path d="M80 60 Q100 40, 120 60 Q100 80, 80 60Z"
+                                                            fill="none" stroke="#E91E63" strokeWidth="3" strokeDasharray="5,5">
+                                                            <animate attributeName="stroke-dashoffset" values="10;0;10" dur="2s" repeatCount="indefinite" />
+                                                        </path>
+
+                                                        {/* Fingers details */}
+                                                        <ellipse cx="45" cy="45" rx="8" ry="12" fill="#D4A574" stroke="#C4956A" strokeWidth="1" />
+                                                        <ellipse cx="155" cy="45" rx="8" ry="12" fill="#D4A574" stroke="#C4956A" strokeWidth="1" />
+
+                                                        {/* Sparkles */}
+                                                        <g fill="#FFD700">
+                                                            <circle cx="60" cy="30" r="2">
+                                                                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0s" />
+                                                            </circle>
+                                                            <circle cx="140" cy="25" r="2">
+                                                                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0.5s" />
+                                                            </circle>
+                                                            <circle cx="100" cy="20" r="2">
+                                                                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="1s" />
+                                                            </circle>
+                                                        </g>
+                                                    </svg>
+                                                </div>
+
+                                                <h3 className="text-lg font-semibold text-white mb-2">
+                                                    No Posts Yet
+                                                </h3>
+                                                <p className="text-slate-400 text-sm max-w-xs mx-auto">
+                                                    Start capturing and sharing your moments
+                                                </p>
                                             </div>
-                                            
-                                            <h3 className="text-lg font-semibold text-white mb-2">
-                                                No Posts Yet
-                                            </h3>
-                                            <p className="text-slate-400 text-sm max-w-xs mx-auto">
-                                                Start capturing and sharing your moments
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        userPosts.map((post, index) => (
-                                            <div key={post._id} className="aspect-square bg-slate-800 rounded-none md:rounded-lg overflow-hidden relative group cursor-pointer">
-                                                {post.imageUrl ? (
-                                                    <img
-                                                        src={post.imageUrl}
-                                                        alt={`Post ${index + 1}`}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                                                        <span className="text-slate-400 text-sm p-2 text-center line-clamp-3">
-                                                            {post.text}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {/* Desktop hover overlay */}
-                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center">
-                                                    <div className="flex items-center gap-6 text-white">
-                                                        <div className="flex items-center gap-2">
-                                                            <svg className="size-6" fill="currentColor" viewBox="0 0 24 24">
-                                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                                            </svg>
-                                                            <span className="font-semibold">{post.likes?.length || 0}</span>
+                                        ) : (
+                                            userPosts.map((post, index) => (
+                                                <div key={post._id} className="aspect-square bg-slate-800 rounded-none md:rounded-lg overflow-hidden relative group cursor-pointer">
+                                                    {post.imageUrl ? (
+                                                        <img
+                                                            src={post.imageUrl}
+                                                            alt={`Post ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                                                            <span className="text-slate-400 text-sm p-2 text-center line-clamp-3">
+                                                                {post.text}
+                                                            </span>
                                                         </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <svg className="size-6" fill="currentColor" viewBox="0 0 24 24">
-                                                                <path d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6M13.5,16L10.5,14H9V10H11.5L14.5,8L13.5,16Z" />
-                                                            </svg>
-                                                            <span className="font-semibold">{post.commentCount || 0}</span>
+                                                    )}
+                                                    {/* Desktop hover overlay */}
+                                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center">
+                                                        <div className="flex items-center gap-6 text-white">
+                                                            <div className="flex items-center gap-2">
+                                                                <svg className="size-6" fill="currentColor" viewBox="0 0 24 24">
+                                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                                </svg>
+                                                                <span className="font-semibold">{post.likes?.length || 0}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <svg className="size-6" fill="currentColor" viewBox="0 0 24 24">
+                                                                    <path d="M21,6H3A1,1 0 0,0 2,7V17A1,1 0 0,0 3,18H21A1,1 0 0,0 22,17V7A1,1 0 0,0 21,6M13.5,16L10.5,14H9V10H11.5L14.5,8L13.5,16Z" />
+                                                                </svg>
+                                                                <span className="font-semibold">{post.commentCount || 0}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                {/* Load More Button */}
-                                {userPostsPagination?.hasNext && (
-                                    <div className="flex justify-center mt-8">
-                                        <button
-                                            onClick={handleLoadMore}
-                                            disabled={isLoadingMoreUserPosts}
-                                            className="px-6 py-2 text-blue-500 font-medium text-sm"
-                                        >
-                                            {isLoadingMoreUserPosts ? (
-                                                <>
-                                                    <span className="loading loading-spinner loading-sm mr-2"></span>
-                                                    Loading more...
-                                                </>
-                                            ) : (
-                                                'Show More'
-                                            )}
-                                        </button>
+                                            ))
+                                        )}
                                     </div>
-                                )}
-                            </>
-                        )}
 
-                        {/* Reels Tab */}
-                        {profileTab === "reels" && (
-                            <div className="flex flex-col items-center justify-center py-16 text-center">
-                                <div className="w-24 h-24 rounded-full border-2 border-slate-600 flex items-center justify-center mb-4">
-                                    <PlayIcon className="size-12 text-slate-600" />
+                                    {/* Load More Button */}
+                                    {userPostsPagination?.hasNext && (
+                                        <div className="flex justify-center mt-8">
+                                            <button
+                                                onClick={handleLoadMore}
+                                                disabled={isLoadingMoreUserPosts}
+                                                className="px-6 py-2 text-blue-500 font-medium text-sm"
+                                            >
+                                                {isLoadingMoreUserPosts ? (
+                                                    <>
+                                                        <span className="loading loading-spinner loading-sm mr-2"></span>
+                                                        Loading more...
+                                                    </>
+                                                ) : (
+                                                    'Show More'
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            {/* Reels Tab */}
+                            {profileTab === "reels" && (
+                                <div className="flex flex-col items-center justify-center py-16 text-center">
+                                    <div className="w-24 h-24 rounded-full border-2 border-slate-600 flex items-center justify-center mb-4">
+                                        <PlayIcon className="size-12 text-slate-600" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-white mb-1">No Reels Yet</h3>
+                                    <p className="text-slate-400">Reels you share will appear here.</p>
                                 </div>
-                                <h3 className="text-xl font-semibold text-white mb-1">No Reels Yet</h3>
-                                <p className="text-slate-400">Reels you share will appear here.</p>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Tagged Tab */}
-                        {profileTab === "tagged" && (
-                            <div className="flex flex-col items-center justify-center py-16 text-center">
-                                <div className="w-24 h-24 rounded-full border-2 border-slate-600 flex items-center justify-center mb-4">
-                                    <BookmarkIcon className="size-12 text-slate-600" />
+                            {/* Tagged Tab */}
+                            {profileTab === "tagged" && (
+                                <div className="flex flex-col items-center justify-center py-16 text-center">
+                                    <div className="w-24 h-24 rounded-full border-2 border-slate-600 flex items-center justify-center mb-4">
+                                        <BookmarkIcon className="size-12 text-slate-600" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-white mb-1">No Tagged Posts</h3>
+                                    <p className="text-slate-400">When people tag you in photos, they'll appear here.</p>
                                 </div>
-                                <h3 className="text-xl font-semibold text-white mb-1">No Tagged Posts</h3>
-                                <p className="text-slate-400">When people tag you in photos, they'll appear here.</p>
-                            </div>
-                        )}
-                    </>
-                )}
-            </div>
+                            )}
+                        </>
+                    )}
+                </div>
 
-            {/* Edit Profile Modal */}
-            <EditProfileModal
-                isOpen={showEditModal}
-                onClose={() => setShowEditModal(false)}
-            />
+                {/* Edit Profile Modal */}
+                <EditProfileModal
+                    isOpen={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                />
 
-            {/* Followers/Following Modal */}
-            <FollowersModal
-                isOpen={showFollowersModal}
-                onClose={() => setShowFollowersModal(false)}
-                userId={userId}
-            />
+                {/* Followers/Following Modal */}
+                <FollowersModal
+                    isOpen={showFollowersModal}
+                    onClose={() => setShowFollowersModal(false)}
+                    userId={userId}
+                />
             </div>
         </div>
     );
