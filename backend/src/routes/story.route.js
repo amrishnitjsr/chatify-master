@@ -41,22 +41,4 @@ router.post("/cleanup", protectRoute, async (req, res) => {
     }
 });
 
-// Debug endpoint - get all stories (for testing)
-router.get("/debug/all", protectRoute, async (req, res) => {
-    try {
-        const allStories = await Story.find({})
-            .populate('userId', 'fullName profilePic')
-            .sort({ createdAt: -1 });
-
-        console.log("DEBUG: All stories in database:", allStories.length);
-        res.json({
-            totalStories: allStories.length,
-            stories: allStories
-        });
-    } catch (error) {
-        console.error("Debug stories error:", error);
-        res.status(500).json({ message: "Error fetching debug stories" });
-    }
-});
-
 export default router;

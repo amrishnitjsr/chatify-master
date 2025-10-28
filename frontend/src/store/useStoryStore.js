@@ -63,12 +63,7 @@ export const useStoryStore = create((set, get) => ({
         set({ isLoadingStories: true });
         try {
             const response = await axiosInstance.get("/stories");
-            console.log("✅ Stories API Response:", {
-                status: response.status,
-                storiesCount: response.data.stories?.length || 0,
-                stories: response.data.stories
-            });
-
+            
             // Filter out expired stories on client side
             const now = new Date();
             const validStories = (response.data.stories || []).filter(story => {
@@ -239,7 +234,6 @@ export const useStoryStore = create((set, get) => ({
 
         // Refresh stories every 5 minutes to catch expired ones
         const interval = setInterval(() => {
-            console.log('Auto-refreshing stories to check for expired ones...');
             get().fetchStories();
         }, 5 * 60 * 1000); // 5 minutes
 
@@ -267,7 +261,6 @@ export const useStoryStore = create((set, get) => ({
 
         // Only update if stories were actually removed
         if (validStories.length !== stories.length) {
-            console.log(`Removed ${stories.length - validStories.length} expired stories from local state`);
             set({ stories: validStories });
         }
     },

@@ -12,9 +12,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "date-fns": "^4.1.0",
-    "emoji-picker-react": "^4.15.0"
-  }
+  "description": ""
 }

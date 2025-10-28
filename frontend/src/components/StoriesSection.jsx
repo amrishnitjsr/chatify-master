@@ -13,27 +13,12 @@ const StoriesSection = () => {
         fetchStories();
     }, [fetchStories]);
 
-    console.log("Stories in StoriesSection:", stories);
-
     const handleCreateStory = () => {
         setShowCreateModal(true);
     };
 
     const handleCloseModal = () => {
         setShowCreateModal(false);
-    };
-
-    const handleDebugStories = async () => {
-        try {
-            console.log("🔍 Debugging stories...");
-            const response = await fetch('/api/stories/debug/all', {
-                credentials: 'include'
-            });
-            const data = await response.json();
-            console.log("🔍 DEBUG - All stories in database:", data);
-        } catch (error) {
-            console.error("❌ Debug fetch error:", error);
-        }
     };
 
     return (
@@ -118,17 +103,6 @@ const StoriesSection = () => {
                         ))
                     )}
                 </div>
-            </div>
-
-            {/* Debug Info */}
-            <div className="mb-4 p-2 bg-slate-800/50 rounded text-xs text-slate-400">
-                Stories loaded: {stories.length} |
-                <button
-                    onClick={handleDebugStories}
-                    className="ml-2 text-blue-400 hover:text-blue-300"
-                >
-                    Debug All Stories
-                </button>
             </div>
 
             <CreateStoryModal
