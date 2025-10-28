@@ -63,7 +63,7 @@ export const useStoryStore = create((set, get) => ({
         set({ isLoadingStories: true });
         try {
             const response = await axiosInstance.get("/stories");
-            
+
             // Filter out expired stories on client side
             const now = new Date();
             const validStories = (response.data.stories || []).filter(story => {
