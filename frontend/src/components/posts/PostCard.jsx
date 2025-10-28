@@ -11,19 +11,7 @@ const PostCard = ({ post }) => {
     const [showMenu, setShowMenu] = useState(false);
 
     const { toggleLike, deletePost } = usePostStore();
-    const { authUser } = useAuthStore();
-
-    // Debug: Log post data to see what we're getting
-    console.log('PostCard post data:', {
-        _id: post._id,
-        text: post.text,
-        imageUrl: post.imageUrl,
-        image: post.image,
-        hasImageUrl: !!post.imageUrl,
-        imageUrlType: typeof post.imageUrl
-    });
-
-    const isOwnPost = authUser?._id === post.userId._id;
+    const { authUser } = useAuthStore(); const isOwnPost = authUser?._id === post.userId._id;
 
     const handleLike = () => {
         toggleLike(post._id);
@@ -122,8 +110,8 @@ const PostCard = ({ post }) => {
                         <button
                             onClick={handleLike}
                             className={`flex items-center gap-2 transition-colors ${post.hasLiked
-                                    ? 'text-red-500 hover:text-red-400'
-                                    : 'text-slate-400 hover:text-red-500'
+                                ? 'text-red-500 hover:text-red-400'
+                                : 'text-slate-400 hover:text-red-500'
                                 }`}
                         >
                             <HeartIcon

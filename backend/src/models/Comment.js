@@ -45,7 +45,7 @@ commentSchema.index({ postId: 1, createdAt: 1 }); // Get comments for a post
 commentSchema.index({ parentId: 1, createdAt: 1 }); // Get replies for a comment
 commentSchema.index({ userId: 1 }); // Query comments by user
 
-// Pre-save middleware to update parent comment's reply count
+// Pre-save middleware to update parent comment's reply count and post comment count
 commentSchema.pre('save', async function (next) {
     if (this.isNew && this.parentId) {
         // This is a new reply, increment parent's reply count
@@ -54,16 +54,35 @@ commentSchema.pre('save', async function (next) {
             { $inc: { replyCount: 1 } }
         );
     }
+
+    // If this is a new comment/reply, increment post's comment count
+    if (this.isNew) {
+        const Post = mongoose.model('Post');
+        await Post.findByIdAndUpdate(
+            this.postId,
+            { $inc: { commentCount: 1 } }
+        );
+    }
+
     next();
 });
 
-// Post-remove middleware to update parent comment's reply count
+// Post-remove middleware to update parent comment's reply count and post comment count
 commentSchema.post('findOneAndDelete', async function (doc) {
     if (doc && doc.parentId) {
         // This reply was deleted, decrement parent's reply count
         await mongoose.model('Comment').findByIdAndUpdate(
             doc.parentId,
             { $inc: { replyCount: -1 } }
+        );
+    }
+
+    // Decrement post's comment count
+    if (doc) {
+        const Post = mongoose.model('Post');
+        await Post.findByIdAndUpdate(
+            doc.postId,
+            { $inc: { commentCount: -1 } }
         );
     }
 });

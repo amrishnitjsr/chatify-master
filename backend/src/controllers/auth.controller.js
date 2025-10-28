@@ -126,22 +126,79 @@ export const logout = (_, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body;
-    if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
-
+    const { fullName, username, bio, website, location, profilePic } = req.body;
     const userId = req.user._id;
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    // Check if username is unique (if provided and different from current)
+    if (username && username !== req.user.username) {
+      const existingUser = await User.findOne({ username, _id: { $ne: userId } });
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+    }
 
+    // Prepare update object
+    const updateData = {};
+    if (fullName !== undefined && fullName !== "") updateData.fullName = fullName;
+    if (username !== undefined) updateData.username = username;
+    if (bio !== undefined) updateData.bio = bio;
+    if (website !== undefined) updateData.website = website;
+    if (location !== undefined) updateData.location = location;
+
+    // Handle profile picture upload if provided (base64 format)
+    if (profilePic && profilePic.startsWith('data:image/')) {
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+          folder: 'profile_pics',
+          transformation: [
+            { width: 400, height: 400, crop: 'fill' },
+            { quality: 'auto' }
+          ]
+        });
+        updateData.profilePic = uploadResponse.secure_url;
+      } catch (uploadError) {
+        console.log("Error uploading image:", uploadError);
+        return res.status(400).json({ message: "Failed to upload image" });
+      }
+    }
+
+    // Update user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
-    );
+      updateData,
+      { new: true, runValidators: true }
+    ).select("-password");
 
-    res.status(200).json(updatedUser);
+    res.status(200).json({ user: updatedUser });
   } catch (error) {
     console.log("Error in update profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get user profile by ID
+export const getUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId)
+      .select("-password")
+      .populate('followers', 'fullName username profilePic')
+      .populate('following', 'fullName username profilePic');
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      user: {
+        ...user.toObject(),
+        followersCount: user.followers.length,
+        followingCount: user.following.length
+      }
+    });
+  } catch (error) {
+    console.log("Error in get user profile:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

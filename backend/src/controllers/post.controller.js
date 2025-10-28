@@ -9,12 +9,16 @@ export const createPost = async (req, res) => {
         const { text, image } = req.body;
         const userId = req.user._id;
 
+        console.log("📝 Post creation request:");
+        console.log("  - User ID:", userId);
+        console.log("  - Text:", text ? `"${text.substring(0, 50)}..."` : "null");
+        console.log("  - Has Image:", !!image);
+        console.log("  - Image type:", typeof image);
+
         // Validate input - require either text or image
         if ((!text || text.trim() === "") && !image) {
             return res.status(400).json({ message: "Post must contain either text or an image" });
-        }
-
-        if (text && text.length > 5000) {
+        } if (text && text.length > 5000) {
             return res.status(400).json({ message: "Post text too long (max 5000 characters)" });
         }
 
@@ -22,27 +26,51 @@ export const createPost = async (req, res) => {
 
         // Handle image upload if provided
         if (image) {
+            console.log("🖼️ Image upload attempt detected");
+            console.log("📊 Image data length:", image?.length || 0);
+            console.log("🔧 Cloudinary config check:");
+            console.log("  - Cloud Name:", !!process.env.CLOUDINARY_CLOUD_NAME);
+            console.log("  - API Key:", !!process.env.CLOUDINARY_API_KEY);
+            console.log("  - API Secret:", !!process.env.CLOUDINARY_API_SECRET);
+
             try {
+                // Check if Cloudinary is properly configured
+                if (!process.env.CLOUDINARY_CLOUD_NAME ||
+                    !process.env.CLOUDINARY_API_KEY ||
+                    !process.env.CLOUDINARY_API_SECRET ||
+                    process.env.CLOUDINARY_API_KEY === 'your-api-key-here') {
+                    throw new Error('Cloudinary not properly configured');
+                }
+
+                console.log("☁️ Uploading to Cloudinary...");
                 const uploadResponse = await cloudinary.uploader.upload(image, {
                     folder: "chatify_posts",
                     resource_type: "image",
                 });
                 imageUrl = uploadResponse.secure_url;
+                console.log("✅ Cloudinary upload successful:", imageUrl);
             } catch (error) {
                 console.error("Cloudinary upload error:", error);
+
+                // Provide helpful error message about configuration
+                if (error.message.includes('not properly configured') || error.message.includes('Invalid api_key')) {
+                    console.log("⚠️  Cloudinary not configured. Set up proper credentials in .env file");
+                    console.log("📖 Visit: https://cloudinary.com to get your credentials");
+                }
 
                 // If we have text, continue without the image
                 // If we only have image and it fails, return error
                 if (!text || text.trim() === "") {
-                    return res.status(400).json({ message: "Failed to upload image and no text provided" });
+                    return res.status(400).json({
+                        message: "Image upload failed. Please add some text or configure Cloudinary properly.",
+                        error: "cloudinary_config_required"
+                    });
                 }
 
-                console.log("Creating post without image due to Cloudinary error");
-                // Continue with imageUrl = null
+                console.log("Creating text-only post due to image upload failure");
+                imageUrl = null; // Continue with imageUrl = null
             }
-        }
-
-        // Create new post
+        }        // Create new post
         const newPost = new Post({
             userId,
             text: text.trim(),

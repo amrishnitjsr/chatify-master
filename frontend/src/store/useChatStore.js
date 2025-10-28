@@ -8,6 +8,7 @@ export const useChatStore = create((set, get) => ({
   allContacts: [],
   chats: [],
   messages: [],
+  onlineUsers: [],
   activeTab: "chats",
   selectedUser: null,
   isUsersLoading: false,
@@ -128,5 +129,21 @@ export const useChatStore = create((set, get) => ({
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
+  },
+
+  // Online users management
+  setOnlineUsers: (users) => set({ onlineUsers: users || [] }),
+
+  subscribeToOnlineUsers: () => {
+    const socket = useAuthStore.getState().socket;
+
+    socket.on("getOnlineUsers", (users) => {
+      set({ onlineUsers: users || [] });
+    });
+  },
+
+  unsubscribeFromOnlineUsers: () => {
+    const socket = useAuthStore.getState().socket;
+    socket.off("getOnlineUsers");
   },
 }));

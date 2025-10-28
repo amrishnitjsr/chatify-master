@@ -7,6 +7,7 @@ export const usePostStore = create((set, get) => ({
     // State
     posts: [],
     userPosts: [],
+    allPosts: [],
     selectedPost: null,
     comments: {},
     profileUser: null,
@@ -14,9 +15,11 @@ export const usePostStore = create((set, get) => ({
     // Loading states
     isPostsLoading: false,
     isUserPostsLoading: false,
+    isAllPostsLoading: false,
     isCreatingPost: false,
     isLoadingComments: false,
     isAddingComment: false,
+    isDeletingComment: false,
     isLoadingMore: false,
     isLoadingMoreUserPosts: false,
 
@@ -167,7 +170,13 @@ export const usePostStore = create((set, get) => ({
     createPost: async (postData) => {
         set({ isCreatingPost: true });
         try {
-            devUtils.log('📝 Creating new post:', { hasText: !!postData.text, hasImage: !!postData.image });
+            devUtils.log('📝 Creating new post:', {
+                hasText: !!postData.text,
+                hasImage: !!postData.image,
+                textLength: postData.text?.length || 0,
+                imageType: typeof postData.image,
+                imageLength: postData.image?.length || 0
+            });
 
             const res = await axiosInstance.post("/posts", postData);
             const newPost = res.data;
@@ -287,21 +296,31 @@ export const usePostStore = create((set, get) => ({
                 const postComments = state.comments[postId] || [];
 
                 if (parentId) {
-                    // This is a reply - add to parent's replies
-                    const updatedComments = postComments.map(comment => {
-                        if (comment._id === parentId) {
-                            return {
-                                ...comment,
-                                replies: [...(comment.replies || []), newComment]
-                            };
-                        }
-                        return comment;
-                    });
+                    // This is a reply - recursively find parent and add reply
+                    const addReplyRecursively = (comments) => {
+                        return comments.map(comment => {
+                            if (comment._id === parentId) {
+                                return {
+                                    ...comment,
+                                    replies: [...(comment.replies || []), { ...newComment, replies: [] }],
+                                    replyCount: (comment.replyCount || 0) + 1
+                                };
+                            }
+                            // Check nested replies
+                            if (comment.replies && comment.replies.length > 0) {
+                                return {
+                                    ...comment,
+                                    replies: addReplyRecursively(comment.replies)
+                                };
+                            }
+                            return comment;
+                        });
+                    };
 
                     return {
                         comments: {
                             ...state.comments,
-                            [postId]: updatedComments
+                            [postId]: addReplyRecursively(postComments)
                         }
                     };
                 } else {
@@ -334,6 +353,57 @@ export const usePostStore = create((set, get) => ({
             throw error;
         } finally {
             set({ isAddingComment: false });
+        }
+    },
+
+    // Delete a comment
+    deleteComment: async (commentId) => {
+        set({ isDeletingComment: true });
+        try {
+            devUtils.log('🗑️ Deleting comment:', commentId);
+
+            await axiosInstance.delete(`/posts/comments/${commentId}`);
+
+            // Remove comment from state
+            set(state => {
+                const updatedComments = { ...state.comments };
+
+                // Find and remove the comment from all posts
+                Object.keys(updatedComments).forEach(postId => {
+                    const postComments = updatedComments[postId];
+
+                    // Recursively remove comment from nested structure
+                    const removeCommentRecursively = (comments) => {
+                        return comments.filter(comment => {
+                            if (comment._id === commentId) {
+                                return false; // Remove this comment
+                            }
+                            // Keep comment but check its replies
+                            if (comment.replies) {
+                                comment.replies = removeCommentRecursively(comment.replies);
+                            }
+                            return true;
+                        });
+                    };
+
+                    updatedComments[postId] = removeCommentRecursively(postComments);
+                });
+
+                return { comments: updatedComments };
+            });
+
+            // Update post comment counts - this will be handled by backend
+            // The backend response includes deletedCount if needed
+
+            toast.success("Comment deleted successfully!");
+            devUtils.log('✅ Comment deleted:', commentId);
+
+        } catch (error) {
+            devUtils.error('❌ Failed to delete comment:', error);
+            toast.error(error.response?.data?.message || "Failed to delete comment");
+            throw error;
+        } finally {
+            set({ isDeletingComment: false });
         }
     },
 
@@ -371,5 +441,21 @@ export const usePostStore = create((set, get) => ({
     getCommentsForPost: (postId) => {
         const state = get();
         return state.comments[postId] || [];
+    },
+
+    // Explore page - fetch all posts for discover
+    fetchAllPosts: async () => {
+        set({ isAllPostsLoading: true });
+        try {
+            devUtils.log('🔍 Fetching all posts for explore');
+            const res = await axiosInstance.get('/posts/explore');
+            set({ allPosts: res.data.posts || [] });
+            devUtils.log('✅ Fetched explore posts:', res.data.posts?.length);
+        } catch (error) {
+            devUtils.error('❌ Failed to fetch explore posts:', error);
+            set({ allPosts: [] });
+        } finally {
+            set({ isAllPostsLoading: false });
+        }
     },
 }));

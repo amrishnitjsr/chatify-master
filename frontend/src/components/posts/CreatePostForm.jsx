@@ -70,8 +70,16 @@ const CreatePostForm = ({ onClose, onSuccess }) => {
 
             onSuccess?.();
         } catch (error) {
-            // Error is already handled in the store
             console.error('Create post error:', error);
+
+            // Handle specific Cloudinary config error
+            if (error.response?.data?.error === 'cloudinary_config_required') {
+                toast.error('Image upload unavailable. Cloudinary not configured.');
+                // If user has text, suggest creating text-only post
+                if (text.trim()) {
+                    toast('💡 Try posting without the image for now', { icon: '💡' });
+                }
+            }
         }
     };
 

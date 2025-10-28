@@ -21,6 +21,7 @@ const router = express.Router();
 // Post routes
 router.post("/", protectRoute, createPost); // Create a new post
 router.get("/", protectRoute, getAllPosts); // Get all posts (with pagination)
+router.get("/explore", protectRoute, getAllPosts); // Get posts for explore page (same as getAllPosts for now)
 router.get("/user/:userId", protectRoute, getUserPosts); // Get posts by user
 router.get("/:postId", protectRoute, getPostById); // Get single post
 router.delete("/:postId", protectRoute, deletePost); // Delete post

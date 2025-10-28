@@ -1,10 +1,8 @@
 import { Navigate, Route, Routes } from "react-router";
-import ChatPage from "./pages/ChatPage";
-import HomePage from "./pages/HomePage";
-import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
-import AuthenticatedLayout from "./components/AuthenticatedLayout";
+import InstagramLayout from "./components/InstagramLayout";
+import ProfilePage from "./pages/ProfilePage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import PageLoader from "./components/PageLoader";
@@ -30,17 +28,15 @@ function App() {
         {/* Protected Routes */}
         {authUser ? (
           <>
-            {/* Routes with AuthenticatedLayout */}
-            <Route element={<AuthenticatedLayout />}>
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/profile/:userId" element={<ProfilePage />} />
-            </Route>
+            {/* Main Instagram-like layout */}
+            <Route path="/" element={<InstagramLayout />} />
 
-            {/* Chat route without layout (has its own styling) */}
-            <Route path="/chat" element={<ChatPage />} />
+            {/* Individual profile pages for direct links */}
+            <Route path="/profile/:userId" element={<ProfilePage />} />
 
-            {/* Default redirect to home */}
-            <Route path="/" element={<Navigate to={"/home"} />} />
+            {/* Redirect old routes to main layout */}
+            <Route path="/home" element={<Navigate to="/" />} />
+            <Route path="/chat" element={<Navigate to="/" />} />
           </>
         ) : (
           /* Redirect to login if not authenticated */

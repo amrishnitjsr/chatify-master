@@ -47,10 +47,8 @@ export const addComment = async (req, res) => {
 
         await newComment.save();
 
-        // Update post's comment count (only for top-level comments)
-        if (!parentId) {
-            await Post.findByIdAndUpdate(postId, { $inc: { commentCount: 1 } });
-        }
+        // Post's comment count is now handled by the Comment model middleware
+        // which counts all comments and replies
 
         // Populate user information for response
         await newComment.populate('userId', 'fullName profilePic');
@@ -62,7 +60,20 @@ export const addComment = async (req, res) => {
     }
 };
 
-// Get comments for a post (organized hierarchically)
+// Helper function to recursively build comment tree
+const buildCommentTree = (comments, parentId = null) => {
+    const children = comments.filter(comment =>
+        (comment.parentId === null && parentId === null) ||
+        (comment.parentId && comment.parentId.toString() === parentId)
+    );
+
+    return children.map(comment => ({
+        ...comment,
+        replies: buildCommentTree(comments, comment._id.toString()),
+    }));
+};
+
+// Get comments for a post (organized hierarchically with unlimited nesting)
 export const getPostComments = async (req, res) => {
     try {
         const { postId } = req.params;
@@ -76,33 +87,47 @@ export const getPostComments = async (req, res) => {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        // Get top-level comments (no parentId)
+        // Get top-level comments for pagination
         const topLevelComments = await Comment.find({
             postId,
             parentId: null
         })
-            .populate('userId', 'fullName profilePic')
-            .sort({ createdAt: 1 }) // Oldest first for comments
+            .sort({ createdAt: 1 })
             .skip(skip)
             .limit(limit)
+            .select('_id')
             .lean();
 
-        // Get all replies for these top-level comments
-        const commentIds = topLevelComments.map(comment => comment._id);
-        const replies = await Comment.find({
-            parentId: { $in: commentIds }
+        const topLevelIds = topLevelComments.map(c => c._id);
+
+        // Get all comments and replies for these top-level comments
+        const allComments = await Comment.find({
+            $or: [
+                { _id: { $in: topLevelIds } }, // Top-level comments
+                { postId, parentId: { $ne: null } } // All replies in the post
+            ]
         })
             .populate('userId', 'fullName profilePic')
             .sort({ createdAt: 1 })
             .lean();
 
-        // Organize replies under their parent comments
-        const commentsWithReplies = topLevelComments.map(comment => ({
-            ...comment,
-            replies: replies.filter(reply =>
-                reply.parentId.toString() === comment._id.toString()
-            ),
-        }));
+        // Filter to only include replies that belong to our paginated top-level comments
+        const relevantComments = allComments.filter(comment => {
+            if (comment.parentId === null) {
+                return topLevelIds.some(id => id.toString() === comment._id.toString());
+            }
+
+            // For replies, check if they ultimately belong to one of our top-level comments
+            let current = comment;
+            while (current.parentId) {
+                current = allComments.find(c => c._id.toString() === current.parentId.toString());
+                if (!current) break;
+            }
+            return current && topLevelIds.some(id => id.toString() === current._id.toString());
+        });
+
+        // Build hierarchical structure
+        const commentsWithReplies = buildCommentTree(relevantComments);
 
         const total = await Comment.countDocuments({ postId, parentId: null });
         const totalPages = Math.ceil(total / limit);
@@ -123,7 +148,7 @@ export const getPostComments = async (req, res) => {
     }
 };
 
-// Get replies for a specific comment
+// Get replies for a specific comment with unlimited nesting
 export const getCommentReplies = async (req, res) => {
     try {
         const { commentId } = req.params;
@@ -132,27 +157,60 @@ export const getCommentReplies = async (req, res) => {
         const skip = (page - 1) * limit;
 
         // Verify comment exists
-        const comment = await Comment.findById(commentId);
+        const comment = await Comment.findById(commentId)
+            .populate('userId', 'fullName profilePic');
         if (!comment) {
             return res.status(404).json({ message: "Comment not found" });
         }
 
-        const replies = await Comment.find({ parentId: commentId })
-            .populate('userId', 'fullName profilePic')
+        // Get direct replies for pagination
+        const directReplies = await Comment.find({ parentId: commentId })
             .sort({ createdAt: 1 })
             .skip(skip)
             .limit(limit)
+            .select('_id')
             .lean();
+
+        const directReplyIds = directReplies.map(r => r._id);
+
+        // Get all nested replies for the direct replies
+        const getAllNestedReplies = async (parentIds) => {
+            const replies = await Comment.find({ parentId: { $in: parentIds } })
+                .populate('userId', 'fullName profilePic')
+                .sort({ createdAt: 1 })
+                .lean();
+
+            if (replies.length === 0) return replies;
+
+            const nestedReplies = await getAllNestedReplies(replies.map(r => r._id));
+            return [...replies, ...nestedReplies];
+        };
+
+        // Get the direct replies with full data
+        const directRepliesWithData = await Comment.find({ _id: { $in: directReplyIds } })
+            .populate('userId', 'fullName profilePic')
+            .sort({ createdAt: 1 })
+            .lean();
+
+        // Get all nested replies
+        const nestedReplies = await getAllNestedReplies(directReplyIds);
+
+        // Combine all replies
+        const allReplies = [...directRepliesWithData, ...nestedReplies];
+
+        // Build hierarchical structure
+        const repliesWithNesting = buildCommentTree(allReplies, commentId);
 
         const total = await Comment.countDocuments({ parentId: commentId });
         const totalPages = Math.ceil(total / limit);
 
         res.status(200).json({
-            replies,
+            replies: repliesWithNesting,
             parentComment: {
                 _id: comment._id,
                 text: comment.text,
                 userId: comment.userId,
+                replyCount: comment.replyCount,
             },
             pagination: {
                 currentPage: page,
@@ -166,6 +224,23 @@ export const getCommentReplies = async (req, res) => {
         console.error("Error fetching comment replies:", error);
         res.status(500).json({ message: "Internal server error" });
     }
+};
+
+// Helper function to recursively delete all nested replies
+const deleteCommentRecursively = async (commentId) => {
+    // Get all direct children
+    const children = await Comment.find({ parentId: commentId });
+
+    // Recursively delete children's children
+    for (const child of children) {
+        await deleteCommentRecursively(child._id);
+    }
+
+    // Delete all direct children
+    await Comment.deleteMany({ parentId: commentId });
+
+    // Delete the comment itself
+    await Comment.findByIdAndDelete(commentId);
 };
 
 // Delete a comment (only by the author)
@@ -184,21 +259,31 @@ export const deleteComment = async (req, res) => {
             return res.status(403).json({ message: "You can only delete your own comments" });
         }
 
-        const postId = comment.postId;
-        const isTopLevel = !comment.parentId;
+        // Count total comments/replies that will be deleted for post count update
+        const countToDelete = async (parentId) => {
+            const children = await Comment.find({ parentId });
+            let total = children.length;
 
-        // If this comment has replies, delete them too
-        await Comment.deleteMany({ parentId: commentId });
+            for (const child of children) {
+                total += await countToDelete(child._id);
+            }
 
-        // Delete the comment
-        await Comment.findByIdAndDelete(commentId);
+            return total;
+        };
 
-        // Update post's comment count (only for top-level comments)
-        if (isTopLevel) {
-            await Post.findByIdAndUpdate(postId, { $inc: { commentCount: -1 } });
-        }
+        const totalToDelete = 1 + await countToDelete(commentId);
 
-        res.status(200).json({ message: "Comment deleted successfully" });
+        // Recursively delete comment and all its nested replies
+        await deleteCommentRecursively(commentId);
+
+        // Update post's comment count
+        // Note: The middleware will handle individual decrements, but we need to adjust for the total
+        // Since middleware decrements one by one, we don't need additional adjustment here
+
+        res.status(200).json({
+            message: "Comment deleted successfully",
+            deletedCount: totalToDelete
+        });
     } catch (error) {
         console.error("Error deleting comment:", error);
         res.status(500).json({ message: "Internal server error" });
