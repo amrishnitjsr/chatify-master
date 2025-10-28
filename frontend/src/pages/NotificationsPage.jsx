@@ -97,7 +97,7 @@ const NotificationsPage = () => {
             const days = Math.floor(diffInSeconds / 86400);
             return `${days}d ago`;
         }
-        
+
         // Show exact date for older notifications
         const options = {
             month: 'short',
@@ -149,8 +149,8 @@ const NotificationsPage = () => {
                         <button
                             onClick={() => setActiveTab("all")}
                             className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "all"
-                                    ? "border-white text-white"
-                                    : "border-transparent text-slate-400 hover:text-white"
+                                ? "border-white text-white"
+                                : "border-transparent text-slate-400 hover:text-white"
                                 }`}
                         >
                             All
@@ -163,8 +163,8 @@ const NotificationsPage = () => {
                         <button
                             onClick={() => setActiveTab("unread")}
                             className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === "unread"
-                                    ? "border-white text-white"
-                                    : "border-transparent text-slate-400 hover:text-white"
+                                ? "border-white text-white"
+                                : "border-transparent text-slate-400 hover:text-white"
                                 }`}
                         >
                             Unread
@@ -268,15 +268,15 @@ const NotificationsPage = () => {
                                             "{notification.metadata.messageText}"
                                         </div>
                                     )}
-                                    
+
                                     {/* Post content preview for post_share notifications */}
                                     {notification.type === 'post_share' && notification.metadata && (
                                         <div className="mt-2 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
                                             <div className="flex items-start gap-3">
                                                 {notification.metadata.postImage && (
-                                                    <img 
-                                                        src={notification.metadata.postImage} 
-                                                        alt="Post preview" 
+                                                    <img
+                                                        src={notification.metadata.postImage}
+                                                        alt="Post preview"
                                                         className="w-12 h-12 rounded object-cover flex-shrink-0"
                                                     />
                                                 )}

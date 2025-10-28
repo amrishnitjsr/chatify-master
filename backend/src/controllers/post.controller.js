@@ -87,10 +87,10 @@ export const createPost = async (req, res) => {
         // Notify followers about new post
         try {
             const user = await User.findById(userId).select('fullName profilePic followers');
-            
+
             if (user && user.followers && user.followers.length > 0) {
                 console.log(`📢 Notifying ${user.followers.length} followers about new post`);
-                
+
                 // Create notifications for all followers
                 const notificationPromises = user.followers.map(async (followerId) => {
                     const notification = new Notification({
@@ -108,7 +108,7 @@ export const createPost = async (req, res) => {
 
                     await notification.save();
                     await notification.populate('sender', 'fullName profilePic username');
-                    
+
                     // Send real-time notification via socket
                     io.to(followerId.toString()).emit("notification", {
                         ...notification.toObject(),
