@@ -1,40 +1,66 @@
 import User from "../models/User.js";
 import { createNotification } from "./notification.controller.js";
 
+// Helper function to find user by ID or username
+const findUserByIdOrUsername = async (identifier) => {
+    let user;
+    try {
+        // First try to find by ObjectId
+        user = await User.findById(identifier);
+    } catch (error) {
+        // If not a valid ObjectId, try finding by username
+        user = null;
+    }
+    
+    // If not found by ID, try by username
+    if (!user) {
+        user = await User.findOne({ username: identifier });
+    }
+    
+    return user;
+};
+
 // Follow/Unfollow a user
 export const toggleFollow = async (req, res) => {
     try {
-        const { userId } = req.params; // User to follow/unfollow
+        const { userId } = req.params; // User to follow/unfollow (can be ID or username)
         const currentUserId = req.user._id; // Current logged in user
 
+        // Find user by ID or username
+        const userToFollow = await findUserByIdOrUsername(userId);
+
+        if (!userToFollow) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         // Check if trying to follow themselves
-        if (userId === currentUserId.toString()) {
+        if (userToFollow._id.toString() === currentUserId.toString()) {
             return res.status(400).json({ message: "You cannot follow yourself" });
         }
 
-        // Find both users
-        const userToFollow = await User.findById(userId);
+        // Find current user
         const currentUser = await User.findById(currentUserId);
 
         if (!userToFollow) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Check if already following
-        const isFollowing = currentUser.following.includes(userId);
+        // Check if already following (use the actual user ID)
+        const targetUserId = userToFollow._id;
+        const isFollowing = currentUser.following.includes(targetUserId);
 
         if (isFollowing) {
             // Unfollow: Remove from following and followers lists
             await User.findByIdAndUpdate(currentUserId, {
-                $pull: { following: userId }
+                $pull: { following: targetUserId }
             });
-            await User.findByIdAndUpdate(userId, {
+            await User.findByIdAndUpdate(targetUserId, {
                 $pull: { followers: currentUserId }
             });
 
             // Send unfollow notification
             await createNotification({
-                recipientId: userId,
+                recipientId: targetUserId,
                 senderId: currentUserId,
                 type: "unfollow",
                 message: `${currentUser.fullName} unfollowed you`,
@@ -51,15 +77,15 @@ export const toggleFollow = async (req, res) => {
         } else {
             // Follow: Add to following and followers lists
             await User.findByIdAndUpdate(currentUserId, {
-                $push: { following: userId }
+                $push: { following: targetUserId }
             });
-            await User.findByIdAndUpdate(userId, {
+            await User.findByIdAndUpdate(targetUserId, {
                 $push: { followers: currentUserId }
             });
 
             // Send follow notification
             await createNotification({
-                recipientId: userId,
+                recipientId: targetUserId,
                 senderId: currentUserId,
                 type: "follow",
                 message: `${currentUser.fullName} started following you`,
@@ -88,7 +114,14 @@ export const getFollowers = async (req, res) => {
         const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
 
-        const user = await User.findById(userId)
+        // Find user by ID or username
+        const user = await findUserByIdOrUsername(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Now populate followers using the actual user ID
+        const populatedUser = await User.findById(user._id)
             .populate({
                 path: 'followers',
                 select: 'fullName username email profilePic bio',
@@ -98,15 +131,11 @@ export const getFollowers = async (req, res) => {
                 }
             });
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const totalFollowers = user.followers.length;
+        const totalFollowers = populatedUser.followers.length;
         const totalPages = Math.ceil(totalFollowers / limit);
 
         res.status(200).json({
-            followers: user.followers,
+            followers: populatedUser.followers,
             pagination: {
                 currentPage: page,
                 totalPages,
@@ -129,7 +158,14 @@ export const getFollowing = async (req, res) => {
         const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
 
-        const user = await User.findById(userId)
+        // Find user by ID or username
+        const user = await findUserByIdOrUsername(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Now populate following using the actual user ID
+        const populatedUser = await User.findById(user._id)
             .populate({
                 path: 'following',
                 select: 'fullName username email profilePic bio',
@@ -139,15 +175,11 @@ export const getFollowing = async (req, res) => {
                 }
             });
 
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const totalFollowing = user.following.length;
+        const totalFollowing = populatedUser.following.length;
         const totalPages = Math.ceil(totalFollowing / limit);
 
         res.status(200).json({
-            following: user.following,
+            following: populatedUser.following,
             pagination: {
                 currentPage: page,
                 totalPages,
@@ -168,8 +200,14 @@ export const checkFollowStatus = async (req, res) => {
         const { userId } = req.params;
         const currentUserId = req.user._id;
 
+        // Find target user by ID or username
+        const targetUser = await findUserByIdOrUsername(userId);
+        if (!targetUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const currentUser = await User.findById(currentUserId);
-        const isFollowing = currentUser.following.includes(userId);
+        const isFollowing = currentUser.following.includes(targetUser._id);
 
         res.status(200).json({ isFollowing });
     } catch (error) {
