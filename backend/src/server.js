@@ -28,6 +28,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'https://chatify-frontend.onrender.com', // Add your frontend URL when deployed
   'https://chatify-frontend.vercel.app',    // Common deployment URLs
+  'https://chatify-frontend-henna.vercel.app', // Your specific Vercel deployment
   'https://chatify-frontend.netlify.app'
 ];
 

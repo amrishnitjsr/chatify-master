@@ -54,7 +54,11 @@ export const useAuthStore = create((set, get) => ({
       const { startStoryRefresh } = useStoryStore.getState();
       startStoryRefresh();
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.error("Signup error:", error);
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to create account. Please try again.";
+      toast.error(errorMessage);
     } finally {
       set({ isSigningUp: false });
     }
@@ -78,7 +82,11 @@ export const useAuthStore = create((set, get) => ({
       const { startStoryRefresh } = useStoryStore.getState();
       startStoryRefresh();
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.error("Login error:", error);
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to log in. Please try again.";
+      toast.error(errorMessage);
     } finally {
       set({ isLoggingIn: false });
     }
