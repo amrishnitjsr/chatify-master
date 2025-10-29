@@ -4,20 +4,22 @@ import { X } from 'lucide-react';
 const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
     const [activeCategory, setActiveCategory] = useState('recent');
 
+    if (!isOpen) return null;
+
     const emojiCategories = {
         recent: {
             name: 'Recently Used',
-            icon: '⭐',
+            icon: '🕒',
             emojis: [
-                '❤️', '😂', '😊', '😍', '😢', '😡', '👍', '👎', '🔥', '💯',
-                '🙏', '🎉', '😎', '🤔', '😘', '🥺', '😀', '😃', '😄', '😁',
+                '😊', '❤️', '😂', '�', '🥺', '😢', '😡', '👍', '👎', '🔥',
+                '💯', '🙏', '🎉', '😎', '🤔', '😘', '😀', '😃', '😄', '😁',
                 '😆', '😅', '🤣', '🙂', '😉', '😇', '🥰', '😋', '😜', '🤪',
                 '😝', '🤑', '🤗', '🤭', '🤫', '🙄', '😏', '😌', '👌', '✌️'
             ]
         },
         smileys: {
             name: 'Smileys & Emotion',
-            icon: '😊',
+            icon: '�',
             emojis: [
                 '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
                 '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚',
@@ -33,7 +35,7 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
         },
         people: {
             name: 'People & Body',
-            icon: '👋',
+            icon: '�',
             emojis: [
                 '👋', '🤚', '🖐️', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞',
                 '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍',
@@ -148,27 +150,27 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="absolute bottom-12 right-0 w-80 md:w-80 h-80 md:h-80 bg-slate-800/95 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute bottom-12 right-0 w-80 md:w-96 h-80 md:h-96 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in slide-in-from-bottom-2 duration-200">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-slate-700/30">
-                <h3 className="text-sm font-semibold text-white">Choose an emoji</h3>
+            <div className="flex items-center justify-between p-3 border-b border-slate-600 bg-slate-750">
+                <h3 className="text-sm font-semibold text-white">Emojis</h3>
                 <button
                     onClick={onClose}
-                    className="text-slate-400 hover:text-white p-1 hover:bg-slate-600/50 rounded-full transition-all touch-manipulation"
+                    className="text-slate-400 hover:text-white p-1.5 hover:bg-slate-600 rounded-full transition-colors"
                 >
-                    <X size={18} />
+                    <X size={16} />
                 </button>
             </div>
 
-            <div className="flex h-72">
+            <div className="flex h-80 md:h-84">
                 {/* Categories Sidebar */}
-                <div className="w-14 bg-slate-700/50 border-r border-slate-600/50 flex flex-col py-2">
+                <div className="w-12 bg-slate-700 border-r border-slate-600 flex flex-col py-1">
                     {Object.entries(emojiCategories).map(([key, category]) => (
                         <button
                             key={key}
                             onClick={() => setActiveCategory(key)}
-                            className={`w-full h-12 flex items-center justify-center text-xl hover:bg-slate-600/50 active:bg-slate-600/70 transition-all touch-manipulation my-1 mx-1 rounded-lg ${activeCategory === key
-                                    ? 'bg-blue-600 text-white shadow-lg'
+                            className={`w-full h-10 flex items-center justify-center text-lg hover:bg-slate-600 transition-colors my-0.5 mx-0.5 rounded-md ${activeCategory === key
+                                    ? 'bg-blue-600 text-white'
                                     : 'text-slate-300 hover:text-white'
                                 }`}
                             title={category.name}
@@ -179,12 +181,9 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
                 </div>
 
                 {/* Emoji Grid */}
-                <div className="flex-1 overflow-y-auto overscroll-contain">
-                    <div className="p-3">
-                        <h4 className="text-xs font-medium text-slate-400 mb-3 px-1">
-                            {emojiCategories[activeCategory].name}
-                        </h4>
-                        <div className="grid grid-cols-7 gap-2">
+                <div className="flex-1 overflow-y-auto">
+                    <div className="p-2">
+                        <div className="grid grid-cols-8 gap-1">
                             {emojiCategories[activeCategory].emojis.map((emoji, index) => (
                                 <button
                                     key={index}
@@ -192,7 +191,7 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
                                         onEmojiSelect(emoji);
                                         onClose();
                                     }}
-                                    className="w-10 h-10 flex items-center justify-center text-xl hover:bg-slate-600/50 active:bg-slate-600/70 rounded-xl transition-all touch-manipulation transform hover:scale-110 active:scale-95"
+                                    className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-lg md:text-xl hover:bg-slate-600 active:bg-slate-500 rounded-md transition-colors transform active:scale-95"
                                     title={emoji}
                                 >
                                     {emoji}

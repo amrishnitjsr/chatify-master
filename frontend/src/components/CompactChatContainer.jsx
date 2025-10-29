@@ -153,23 +153,25 @@ function CompactChatContainer() {
                         />
 
                         {/* Emoji Picker Button */}
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2" ref={emojiPickerRef}>
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2" ref={emojiPickerRef}>
                             <button
                                 type="button"
                                 onClick={toggleEmojiPicker}
-                                className={`p-2 rounded-full touch-manipulation transition-colors ${showEmojiPicker
-                                    ? 'text-blue-400 bg-slate-600/50'
-                                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-600/30'
+                                className={`p-2 rounded-full transition-colors ${showEmojiPicker
+                                    ? 'text-blue-400 bg-slate-600'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-600'
                                     }`}
                             >
                                 <Smile className="w-5 h-5" />
                             </button>
 
-                            <CategoryEmojiPicker
-                                isOpen={showEmojiPicker}
-                                onEmojiSelect={handleEmojiSelect}
-                                onClose={closeEmojiPicker}
-                            />
+                            {showEmojiPicker && (
+                                <CategoryEmojiPicker
+                                    isOpen={showEmojiPicker}
+                                    onEmojiSelect={handleEmojiSelect}
+                                    onClose={closeEmojiPicker}
+                                />
+                            )}
                         </div>
                     </div>
 
