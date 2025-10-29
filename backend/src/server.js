@@ -39,15 +39,15 @@ app.use(cors({
   origin: (origin, callback) => {
     console.log('🌐 CORS Origin Request:', origin);
 
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like mobile apps, curl requests, or same-origin requests)
     if (!origin) {
-      console.log('🌐 CORS: Allowing request with no origin');
+      console.log('🌐 CORS: Allowing request with no origin (mobile app or same-origin)');
       return callback(null, true);
     }
 
     // Check if origin is in allowed list or matches Vercel pattern
-    const isAllowed = allowedOrigins.includes(origin) || 
-                     (origin && origin.includes('vercel.app') && origin.includes('chatify-frontend'));
+    const isAllowed = allowedOrigins.includes(origin) ||
+      (origin && origin.includes('vercel.app') && origin.includes('chatify-frontend'));
 
     if (isAllowed) {
       console.log('✅ CORS: Allowing origin:', origin);
@@ -58,7 +58,10 @@ app.use(cors({
     }
   },
   credentials: true,
-  optionsSuccessStatus: 200 // Support legacy browsers
+  optionsSuccessStatus: 200, // Support legacy browsers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Set-Cookie'] // Ensure Set-Cookie headers are exposed
 }));
 
 app.use(cookieParser());

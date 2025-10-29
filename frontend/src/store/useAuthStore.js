@@ -44,20 +44,14 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
 
       toast.success("Account created successfully!");
-      get().connectSocket();
-
-      // Initialize notifications
-      const { fetchUnreadCount } = useNotificationStore.getState();
-      fetchUnreadCount();
-
-      // Start story refresh
-      const { startStoryRefresh } = useStoryStore.getState();
-      startStoryRefresh();
+      
+      // Initialize post-signup actions with proper delays and error handling
+      get().initializePostAuthActions();
     } catch (error) {
       console.error("Signup error:", error);
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          "Failed to create account. Please try again.";
+      const errorMessage = error.response?.data?.message ||
+        error.message ||
+        "Failed to create account. Please try again.";
       toast.error(errorMessage);
     } finally {
       set({ isSigningUp: false });
@@ -72,20 +66,13 @@ export const useAuthStore = create((set, get) => ({
 
       toast.success("Logged in successfully");
 
-      get().connectSocket();
-
-      // Initialize notifications
-      const { fetchUnreadCount } = useNotificationStore.getState();
-      fetchUnreadCount();
-
-      // Start story refresh
-      const { startStoryRefresh } = useStoryStore.getState();
-      startStoryRefresh();
+      // Initialize post-login actions with proper delays and error handling
+      get().initializePostAuthActions();
     } catch (error) {
       console.error("Login error:", error);
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          "Failed to log in. Please try again.";
+      const errorMessage = error.response?.data?.message ||
+        error.message ||
+        "Failed to log in. Please try again.";
       toast.error(errorMessage);
     } finally {
       set({ isLoggingIn: false });
@@ -200,5 +187,69 @@ export const useAuthStore = create((set, get) => ({
       icon: newValue ? '🔔' : '🔕',
       duration: 2000
     });
+  },
+
+  // Initialize post-authentication actions with proper error handling
+  initializePostAuthActions: async () => {
+    console.log("🔄 Initializing post-auth actions...");
+    
+    // Step 1: Connect socket immediately (doesn't require auth)
+    try {
+      get().connectSocket();
+      console.log("✅ Socket connected successfully");
+    } catch (error) {
+      console.error("❌ Socket connection failed:", error);
+    }
+
+    // Step 2: Wait a bit for cookie to be properly set, then try auth-required actions
+    const attemptAuthActions = async (attempt = 1, maxAttempts = 3) => {
+      const delay = attempt * 1000; // Progressive delay: 1s, 2s, 3s
+      
+      console.log(`🔄 Attempting auth actions (attempt ${attempt}/${maxAttempts}) with ${delay}ms delay...`);
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      try {
+        // Try to verify auth first
+        const authCheck = await axiosInstance.get("/auth/check");
+        console.log("✅ Auth verified successfully:", authCheck.data.fullName);
+        
+        // If auth works, proceed with other actions
+        try {
+          const { fetchUnreadCount } = useNotificationStore.getState();
+          await fetchUnreadCount();
+          console.log("✅ Notifications initialized successfully");
+        } catch (notifError) {
+          console.warn("⚠️ Notification initialization failed, but continuing:", notifError.message);
+        }
+
+        try {
+          const { startStoryRefresh } = useStoryStore.getState();
+          startStoryRefresh();
+          console.log("✅ Stories initialized successfully");
+        } catch (storyError) {
+          console.warn("⚠️ Story initialization failed, but continuing:", storyError.message);
+        }
+        
+      } catch (authError) {
+        console.error(`❌ Auth verification failed on attempt ${attempt}:`, authError.message);
+        
+        if (attempt < maxAttempts && (
+          authError.response?.status === 401 || 
+          authError.message.includes('token') ||
+          authError.message.includes('Unauthorized')
+        )) {
+          console.log(`🔄 Retrying auth actions in ${(attempt + 1) * 1000}ms...`);
+          return attemptAuthActions(attempt + 1, maxAttempts);
+        } else {
+          console.error("❌ Max auth attempts reached or non-auth error, giving up:", authError.message);
+          // Don't show error to user for this, as login/signup was successful
+          // The user can still use the app, just some features might not be initialized
+        }
+      }
+    };
+
+    // Start the auth action attempts
+    attemptAuthActions();
   },
 }));

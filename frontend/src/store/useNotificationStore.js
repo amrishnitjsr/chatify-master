@@ -36,8 +36,18 @@ const useNotificationStore = create((set) => ({
             const response = await axiosInstance.get('/notifications/unread-count');
             set({ unreadCount: response.data.unreadCount || 0 });
         } catch (error) {
-            console.error('Error fetching unread count:', error);
+            // Only log auth errors as warnings, not errors, to avoid scary console messages
+            if (error.response?.status === 401 || error.message.includes('Unauthorized')) {
+                console.warn('Notification count fetch failed - user not authenticated yet:', error.message);
+            } else {
+                console.error('Error fetching unread count:', error);
+            }
             set({ unreadCount: 0 });
+            
+            // Re-throw auth errors so calling code can handle retries
+            if (error.response?.status === 401) {
+                throw error;
+            }
         }
     },
 

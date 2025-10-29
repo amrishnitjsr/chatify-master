@@ -48,14 +48,20 @@ export const signup = async (req, res) => {
       // after CR:
       // Persist user first, then issue auth cookie
       const savedUser = await newUser.save();
-      generateToken(savedUser._id, res);
+      console.log("✅ User saved to database:", savedUser._id);
+      
+      const token = generateToken(savedUser._id, res);
+      console.log("✅ JWT token generated and cookie set for user:", savedUser.fullName);
 
-      res.status(201).json({
+      const responseData = {
         _id: newUser._id,
         fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
-      });
+      };
+
+      console.log("✅ Signup successful, sending response for:", newUser.fullName);
+      res.status(201).json(responseData);
 
       try {
         await sendWelcomeEmail(savedUser.email, savedUser.fullName, ENV.CLIENT_URL);
@@ -99,15 +105,18 @@ export const login = async (req, res) => {
     }
 
     console.log("✅ Password correct, generating token");
-    generateToken(user._id, res);
+    const token = generateToken(user._id, res);
+    console.log("✅ JWT token generated and cookie set for user:", user.fullName);
 
-    console.log("✅ Login successful for:", user.fullName);
-    res.status(200).json({
+    const responseData = {
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
-    });
+    };
+
+    console.log("✅ Login successful, sending response for:", user.fullName);
+    res.status(200).json(responseData);
   } catch (error) {
     console.error("💥 Error in login controller:", error);
 
@@ -177,11 +186,11 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-// Get user profile by ID or username
+// Get user profile by ID or username (works with or without authentication)
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
-    const viewerId = req.user?._id; // Current user viewing the profile
+    const viewerId = req.user?._id; // Current user viewing the profile (may be undefined if not authenticated)
 
     // Find user by ID or username
     let user;
@@ -195,7 +204,7 @@ export const getUserProfile = async (req, res) => {
       // If not a valid ObjectId, try finding by username
       user = null;
     }
-    
+
     // If not found by ID, try by username
     if (!user) {
       user = await User.findOne({ username: userId })

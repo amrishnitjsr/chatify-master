@@ -19,14 +19,30 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Add response interceptor for logging (development only)
+// Add response interceptor for logging and auth error handling
 axiosInstance.interceptors.response.use(
   (response) => {
     devUtils.log('API Response:', response.status, response.config.url);
     return response;
   },
   (error) => {
-    devUtils.error('API Response Error:', error.response?.status, error.config?.url);
+    const status = error.response?.status;
+    const url = error.config?.url;
+    const errorCode = error.response?.data?.code;
+    
+    devUtils.error('API Response Error:', status, url, errorCode);
+    
+    // Handle authentication errors more gracefully
+    if (status === 401 && errorCode) {
+      console.warn(`🔐 Auth issue (${errorCode}):`, error.response.data.message);
+      
+      // Don't auto-logout on auth errors during initial setup
+      // Let the calling code handle retries first
+      if (!url?.includes('/auth/check') && !url?.includes('/notifications/unread-count')) {
+        console.warn('🔐 Non-critical auth error, allowing retry');
+      }
+    }
+    
     return Promise.reject(error);
   }
 );
