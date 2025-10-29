@@ -39,6 +39,13 @@ const ChatifyLayout = () => {
     const [showMoreMenu, setShowMoreMenu] = useState(false);
     const [selectedProfileUserId, setSelectedProfileUserId] = useState(null);
 
+    // Open chat window automatically if a user is selected for chat
+    useEffect(() => {
+        if (selectedUser) {
+            setShowMessagesPanel(true);
+        }
+    }, [selectedUser]);
+
     const navigationItems = [
         { id: "home", icon: HomeIcon, label: "Home" },
         { id: "search", icon: SearchIcon, label: "Search" },
