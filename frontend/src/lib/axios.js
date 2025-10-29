@@ -29,20 +29,20 @@ axiosInstance.interceptors.response.use(
     const status = error.response?.status;
     const url = error.config?.url;
     const errorCode = error.response?.data?.code;
-    
+
     devUtils.error('API Response Error:', status, url, errorCode);
-    
+
     // Handle authentication errors more gracefully
     if (status === 401 && errorCode) {
       console.warn(`🔐 Auth issue (${errorCode}):`, error.response.data.message);
-      
+
       // Don't auto-logout on auth errors during initial setup
       // Let the calling code handle retries first
       if (!url?.includes('/auth/check') && !url?.includes('/notifications/unread-count')) {
         console.warn('🔐 Non-critical auth error, allowing retry');
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

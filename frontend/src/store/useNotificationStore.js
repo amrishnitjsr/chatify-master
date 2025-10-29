@@ -43,7 +43,7 @@ const useNotificationStore = create((set) => ({
                 console.error('Error fetching unread count:', error);
             }
             set({ unreadCount: 0 });
-            
+
             // Re-throw auth errors so calling code can handle retries
             if (error.response?.status === 401) {
                 throw error;

@@ -49,7 +49,7 @@ export const signup = async (req, res) => {
       // Persist user first, then issue auth cookie
       const savedUser = await newUser.save();
       console.log("✅ User saved to database:", savedUser._id);
-      
+
       const token = generateToken(savedUser._id, res);
       console.log("✅ JWT token generated and cookie set for user:", savedUser.fullName);
 

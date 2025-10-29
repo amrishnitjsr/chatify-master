@@ -3,8 +3,10 @@ import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { config, devUtils } from "../lib/config.js";
+
 import useNotificationStore from "./useNotificationStore.js";
 import { useStoryStore } from "./useStoryStore.js";
+import useFollowStore from "./useFollowStore.js";
 import soundManager from "../lib/soundManager.js";
 
 export const useAuthStore = create((set, get) => ({
@@ -44,7 +46,7 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
 
       toast.success("Account created successfully!");
-      
+
       // Initialize post-signup actions with proper delays and error handling
       get().initializePostAuthActions();
     } catch (error) {
@@ -89,6 +91,31 @@ export const useAuthStore = create((set, get) => ({
       // Stop story refresh and clear data
       const { clearStoryData } = useStoryStore.getState();
       clearStoryData();
+
+      // Clear notifications
+      const { resetNotifications } = useNotificationStore.getState();
+      resetNotifications();
+
+      // Clear follow data
+      const { clearFollowData } = useFollowStore.getState();
+      clearFollowData();
+
+      // Clear chat data
+      if (window?.location) {
+        // Only import dynamically to avoid circular deps in SSR
+        import("./useChatStore").then(({ useChatStore }) => {
+          useChatStore.getState().set({
+            allContacts: [],
+            chats: [],
+            messages: [],
+            onlineUsers: [],
+            activeTab: "chats",
+            selectedUser: null,
+            isUsersLoading: false,
+            isMessagesLoading: false
+          });
+        });
+      }
     } catch (error) {
       toast.error("Error logging out");
       console.log("Logout error:", error);
@@ -192,7 +219,7 @@ export const useAuthStore = create((set, get) => ({
   // Initialize post-authentication actions with proper error handling
   initializePostAuthActions: async () => {
     console.log("🔄 Initializing post-auth actions...");
-    
+
     // Step 1: Connect socket immediately (doesn't require auth)
     try {
       get().connectSocket();
@@ -204,16 +231,16 @@ export const useAuthStore = create((set, get) => ({
     // Step 2: Wait a bit for cookie to be properly set, then try auth-required actions
     const attemptAuthActions = async (attempt = 1, maxAttempts = 3) => {
       const delay = attempt * 1000; // Progressive delay: 1s, 2s, 3s
-      
+
       console.log(`🔄 Attempting auth actions (attempt ${attempt}/${maxAttempts}) with ${delay}ms delay...`);
-      
+
       await new Promise(resolve => setTimeout(resolve, delay));
-      
+
       try {
         // Try to verify auth first
         const authCheck = await axiosInstance.get("/auth/check");
         console.log("✅ Auth verified successfully:", authCheck.data.fullName);
-        
+
         // If auth works, proceed with other actions
         try {
           const { fetchUnreadCount } = useNotificationStore.getState();
@@ -230,12 +257,12 @@ export const useAuthStore = create((set, get) => ({
         } catch (storyError) {
           console.warn("⚠️ Story initialization failed, but continuing:", storyError.message);
         }
-        
+
       } catch (authError) {
         console.error(`❌ Auth verification failed on attempt ${attempt}:`, authError.message);
-        
+
         if (attempt < maxAttempts && (
-          authError.response?.status === 401 || 
+          authError.response?.status === 401 ||
           authError.message.includes('token') ||
           authError.message.includes('Unauthorized')
         )) {
