@@ -178,7 +178,8 @@ export const usePostStore = create((set, get) => ({
                 imageLength: postData.image?.length || 0
             });
 
-            const res = await axiosInstance.post("/posts", postData);
+            // Increase timeout to 30 seconds for post creation
+            const res = await axiosInstance.post("/posts", postData, { timeout: 30000 });
             const newPost = res.data;
 
             // Add to beginning of posts array
