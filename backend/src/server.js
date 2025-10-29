@@ -27,7 +27,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:5173',
   'https://chatify-frontend.onrender.com', // Add your frontend URL when deployed
-  'https://chatify-frontend.vercel.app',    // Common deployment URLs
+  'https://chatify-frontend.vercel.app',
+  'https://chatify-frontend-henna.vercel.app',// Common deployment URLs
   'https://chatify-frontend.netlify.app'
 ];
 
@@ -44,7 +45,10 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
+   const isAllowed = allowedOrigins.includes(origin) || 
+                     (origin && origin.includes('vercel.app') && origin.includes('chatify-frontend'));
+
+    if (isAllowed) {
       console.log('✅ CORS: Allowing origin:', origin);
       callback(null, true);
     } else {
