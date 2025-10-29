@@ -184,7 +184,7 @@ const ChatifyLayout = () => {
                             <div className="absolute bottom-16 left-4 right-4 bg-slate-700 rounded-lg shadow-lg border border-slate-600 py-2">
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-slate-600 transition-colors"
+                                    className="w-full flex items-center gap-3 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors cursor-pointer shadow"
                                 >
                                     <LogOutIcon className="size-4" />
                                     <span>Log out</span>
