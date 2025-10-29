@@ -11,12 +11,12 @@ const findUserByIdOrUsername = async (identifier) => {
         // If not a valid ObjectId, try finding by username
         user = null;
     }
-    
+
     // If not found by ID, try by username
     if (!user) {
         user = await User.findOne({ username: identifier });
     }
-    
+
     return user;
 };
 
