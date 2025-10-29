@@ -55,16 +55,24 @@ function CompactChatContainer() {
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
+        const messageText = newMessage.trim();
+        if (!messageText) return;
+
+        // Clear input immediately for better UX
+        setNewMessage("");
+        
+        // Close emoji picker if open
+        setShowEmojiPicker(false);
 
         try {
             await sendMessage({
-                text: newMessage.trim(),
+                text: messageText,
                 image: null,
             });
-            setNewMessage("");
         } catch (error) {
             console.error("Failed to send message:", error);
+            // Restore message on error
+            setNewMessage(messageText);
         }
     };
 
@@ -78,6 +86,13 @@ function CompactChatContainer() {
 
     const closeEmojiPicker = () => {
         setShowEmojiPicker(false);
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage(e);
+        }
     };
 
 
@@ -149,6 +164,7 @@ function CompactChatContainer() {
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
                             placeholder="Type a message..."
                             className="w-full bg-slate-700/80 border border-slate-600/50 rounded-3xl px-6 py-3 pr-12 text-white placeholder-slate-400 text-base focus:outline-none focus:border-blue-500 focus:bg-slate-700 transition-all resize-none min-h-[48px] leading-relaxed"
                             style={{ fontSize: '16px' }} // Prevents zoom on iOS
