@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
-import { Smile } from "lucide-react";
+import { Smile, Camera, Image } from "lucide-react";
 import CategoryEmojiPicker from "./CategoryEmojiPicker";
 
 function CompactChatContainer() {
@@ -18,26 +18,33 @@ function CompactChatContainer() {
     const { authUser } = useAuthStore();
     const messageEndRef = useRef(null);
     const messageInputRef = useRef(null);
+    const cameraInputRef = useRef(null);
+    const galleryInputRef = useRef(null);
     const [newMessage, setNewMessage] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showMediaOptions, setShowMediaOptions] = useState(false);
     const emojiPickerRef = useRef(null);
+    const mediaOptionsRef = useRef(null);
 
-    // Close emoji picker when clicking outside
+    // Close emoji picker and media options when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
                 setShowEmojiPicker(false);
             }
+            if (mediaOptionsRef.current && !mediaOptionsRef.current.contains(event.target)) {
+                setShowMediaOptions(false);
+            }
         };
 
-        if (showEmojiPicker) {
+        if (showEmojiPicker || showMediaOptions) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showEmojiPicker]);
+    }, [showEmojiPicker, showMediaOptions]);
 
     useEffect(() => {
         if (selectedUser?._id) {
@@ -104,6 +111,55 @@ function CompactChatContainer() {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSendMessage(e);
+        }
+    };
+
+    const toggleMediaOptions = () => {
+        setShowMediaOptions(prev => !prev);
+        setShowEmojiPicker(false);
+    };
+
+    const handleCameraCapture = () => {
+        cameraInputRef.current?.click();
+        setShowMediaOptions(false);
+    };
+
+    const handleGallerySelect = () => {
+        galleryInputRef.current?.click();
+        setShowMediaOptions(false);
+    };
+
+    const handleImageSelect = async (event, isCamera = false) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image size must be less than 5MB');
+            return;
+        }
+
+        try {
+            // Create FormData for image upload
+            const formData = new FormData();
+            formData.append('image', file);
+
+            await sendMessage({
+                text: '',
+                image: file,
+            });
+
+            // Clear file input
+            event.target.value = '';
+        } catch (error) {
+            console.error('Failed to send image:', error);
+            alert('Failed to send image. Please try again.');
         }
     };
 
@@ -211,19 +267,67 @@ function CompactChatContainer() {
                         </div>
                     </div>
 
-                    {/* Send Button */}
-                    <button
-                        type="submit"
-                        disabled={!newMessage.trim()}
-                        className={`p-3 rounded-full touch-manipulation transition-all duration-200 ${newMessage.trim()
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95'
-                                : 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
-                            }`}
-                    >
-                        <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                        </svg>
-                    </button>
+                    {/* Send Button or Camera Button */}
+                    {newMessage.trim() ? (
+                        <button
+                            type="submit"
+                            className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 touch-manipulation transition-all duration-200"
+                        >
+                            <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                            </svg>
+                        </button>
+                    ) : (
+                        <div className="relative" ref={mediaOptionsRef}>
+                            <button
+                                type="button"
+                                onClick={toggleMediaOptions}
+                                className={`p-3 rounded-full transition-all duration-200 ${showMediaOptions
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-slate-600 hover:bg-green-600 text-slate-300 hover:text-white'
+                                } touch-manipulation transform hover:scale-105 active:scale-95`}
+                            >
+                                <Camera className="size-5" />
+                            </button>
+
+                            {/* Media Options Menu */}
+                            {showMediaOptions && (
+                                <div className="absolute bottom-14 right-0 bg-slate-700 rounded-lg shadow-lg border border-slate-600 py-2 min-w-[140px] z-50">
+                                    <button
+                                        onClick={handleCameraCapture}
+                                        className="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-slate-600 transition-colors"
+                                    >
+                                        <Camera className="w-4 h-4 text-green-400" />
+                                        <span className="text-sm">Camera</span>
+                                    </button>
+                                    <button
+                                        onClick={handleGallerySelect}
+                                        className="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-slate-600 transition-colors"
+                                    >
+                                        <Image className="w-4 h-4 text-blue-400" />
+                                        <span className="text-sm">Gallery</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Hidden File Inputs */}
+                    <input
+                        ref={cameraInputRef}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={(e) => handleImageSelect(e, true)}
+                        className="hidden"
+                    />
+                    <input
+                        ref={galleryInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageSelect(e, false)}
+                        className="hidden"
+                    />
                 </form>
             </div>
         </div>
