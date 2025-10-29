@@ -177,27 +177,43 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-// Get user profile by ID
+// Get user profile by ID or username
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
     const viewerId = req.user?._id; // Current user viewing the profile
 
-    const user = await User.findById(userId)
-      .select("-password")
-      .populate('followers', 'fullName username profilePic')
-      .populate('following', 'fullName username profilePic');
+    // Find user by ID or username
+    let user;
+    try {
+      // First try to find by ObjectId
+      user = await User.findById(userId)
+        .select("-password")
+        .populate('followers', 'fullName username profilePic')
+        .populate('following', 'fullName username profilePic');
+    } catch (error) {
+      // If not a valid ObjectId, try finding by username
+      user = null;
+    }
+    
+    // If not found by ID, try by username
+    if (!user) {
+      user = await User.findOne({ username: userId })
+        .select("-password")
+        .populate('followers', 'fullName username profilePic')
+        .populate('following', 'fullName username profilePic');
+    }
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // Send profile view notification (only if viewing someone else's profile)
-    if (viewerId && viewerId.toString() !== userId) {
+    if (viewerId && viewerId.toString() !== user._id.toString()) {
       const viewer = await User.findById(viewerId).select('fullName');
       if (viewer) {
         await createNotification({
-          recipientId: userId,
+          recipientId: user._id,
           senderId: viewerId,
           type: "profile_view",
           message: `${viewer.fullName} viewed your profile`,
