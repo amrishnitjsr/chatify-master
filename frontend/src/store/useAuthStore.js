@@ -6,7 +6,7 @@ import { config, devUtils } from "../lib/config.js";
 
 import useNotificationStore from "./useNotificationStore.js";
 import { useStoryStore } from "./useStoryStore.js";
-import useFollowStore from "./useFollowStore.js";
+import { useFollowStore } from "./useFollowStore.js";
 import soundManager from "../lib/soundManager.js";
 
 export const useAuthStore = create((set, get) => ({
