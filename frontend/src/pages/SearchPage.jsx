@@ -72,16 +72,19 @@ const SearchPage = ({ onUserClick }) => {
         localStorage.setItem("recentSearches", JSON.stringify(updated));
     };
 
+    // Utility to detect mobile/Android
+    const isMobile = typeof window !== 'undefined' && /android|iphone|ipad|mobile/i.test(window.navigator.userAgent);
+
     return (
-        <div className="h-full flex">
-            {/* Search Sidebar */}
-            <div className="w-96 border-r border-slate-700/50 bg-slate-800/30 backdrop-blur-sm">
+        <div className="h-full flex flex-col md:flex-row">
+            {/* Search Sidebar or Topbar */}
+            <div className={isMobile ? "w-full border-b border-slate-700/50 bg-slate-800/30 backdrop-blur-sm" : "w-96 border-r border-slate-700/50 bg-slate-800/30 backdrop-blur-sm"}>
                 {/* Header */}
-                <div className="p-6 border-b border-slate-700/50">
+                <div className={isMobile ? "p-4 border-b border-slate-700/50" : "p-6 border-b border-slate-700/50"}>
                     <h1 className="text-2xl font-semibold text-white mb-4">Search</h1>
 
                     {/* Search Input */}
-                    <div className="relative">
+                    <div className="relative w-full">
                         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                         <input
                             type="text"
@@ -90,7 +93,10 @@ const SearchPage = ({ onUserClick }) => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setIsSearchFocused(false)}
-                            className="w-full pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className={isMobile
+                                ? "w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-lg"
+                                : "w-full pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            }
                         />
                         {searchQuery && (
                             <button

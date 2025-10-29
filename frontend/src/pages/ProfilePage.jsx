@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { usePostStore } from "../store/usePostStore";
 import { useAuthStore } from "../store/useAuthStore";
+// Utility to detect mobile/Android
+const isMobile = typeof window !== 'undefined' && /android|iphone|ipad|mobile/i.test(window.navigator.userAgent);
 import { useFollowStore } from "../store/useFollowStore";
 import { useChatStore } from "../store/useChatStore";
 import PostCard from "../components/posts/PostCard";
@@ -26,7 +28,7 @@ const ProfilePage = ({ userId: propUserId }) => {
     const { userId: paramUserId } = useParams();
     const userId = propUserId || paramUserId;
     const navigate = useNavigate();
-    const { authUser, getUserProfile } = useAuthStore();
+    const { authUser, getUserProfile, logout } = useAuthStore();
     const { setSelectedUser, setActiveTab } = useChatStore();
     const {
         userPosts,
@@ -219,7 +221,7 @@ const ProfilePage = ({ userId: propUserId }) => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2 mb-6">
+                    <div className="flex flex-col gap-2 mb-6">
                         {!isOwnProfile ? (
                             <>
                                 <button
@@ -256,6 +258,15 @@ const ProfilePage = ({ userId: propUserId }) => {
                                 <button className="bg-slate-600 hover:bg-slate-500 text-white p-2 rounded-lg">
                                     <UserPlusIcon className="size-4" />
                                 </button>
+                                {/* Show logout button on mobile/Android in profile section */}
+                                {isMobile && (
+                                    <button
+                                        onClick={logout}
+                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-semibold text-sm mt-2"
+                                    >
+                                        Log out
+                                    </button>
+                                )}
                             </>
                         )}
                     </div>
