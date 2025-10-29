@@ -17,6 +17,7 @@ function CompactChatContainer() {
     } = useChatStore();
     const { authUser } = useAuthStore();
     const messageEndRef = useRef(null);
+    const messageInputRef = useRef(null);
     const [newMessage, setNewMessage] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const emojiPickerRef = useRef(null);
@@ -63,6 +64,13 @@ function CompactChatContainer() {
         
         // Close emoji picker if open
         setShowEmojiPicker(false);
+        
+        // Blur input to close Android keyboard
+        setTimeout(() => {
+            if (messageInputRef.current) {
+                messageInputRef.current.blur();
+            }
+        }, 100);
 
         try {
             await sendMessage({
@@ -73,6 +81,10 @@ function CompactChatContainer() {
             console.error("Failed to send message:", error);
             // Restore message on error
             setNewMessage(messageText);
+            // Refocus input if there was an error
+            if (messageInputRef.current) {
+                messageInputRef.current.focus();
+            }
         }
     };
 
@@ -161,6 +173,7 @@ function CompactChatContainer() {
                 <form onSubmit={handleSendMessage} className="flex items-end gap-3">
                     <div className="flex-1 relative">
                         <input
+                            ref={messageInputRef}
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
