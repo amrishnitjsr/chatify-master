@@ -167,6 +167,11 @@ function CompactChatContainer() {
                                 <Smile className="w-5 h-5" />
                             </button>
 
+                            {/* Mobile Backdrop */}
+                            {showEmojiPicker && (
+                                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998] md:hidden" onClick={closeEmojiPicker} />
+                            )}
+
                             {showEmojiPicker && (
                                 <CategoryEmojiPicker
                                     isOpen={showEmojiPicker}

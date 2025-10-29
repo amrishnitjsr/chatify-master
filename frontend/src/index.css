@@ -38,6 +38,18 @@
   display: none;
 }
 
+/* Safe area padding for mobile devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Android navigation bar support */
+@supports (padding: max(0px)) {
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
 .auth-link {
   @apply px-4 py-2 inline-block bg-cyan-500/10 rounded-lg text-cyan-400 hover:text-cyan-500 text-sm transition-colors;
 }
