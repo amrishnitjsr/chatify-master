@@ -45,7 +45,11 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin is in allowed list or matches Vercel pattern
+    const isAllowed = allowedOrigins.includes(origin) || 
+                     (origin && origin.includes('vercel.app') && origin.includes('chatify-frontend'));
+
+    if (isAllowed) {
       console.log('✅ CORS: Allowing origin:', origin);
       callback(null, true);
     } else {
