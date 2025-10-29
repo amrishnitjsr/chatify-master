@@ -270,7 +270,7 @@ function CompactChatContainer() {
                         </div>
 
                         {/* Emoji Picker */}
-                        <div ref={emojiPickerRef}>
+                        <div ref={emojiPickerRef} className="relative">
                             {showEmojiPicker && (
                                 <CategoryEmojiPicker
                                     isOpen={showEmojiPicker}

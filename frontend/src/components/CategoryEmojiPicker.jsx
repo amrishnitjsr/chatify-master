@@ -150,9 +150,9 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="absolute bottom-12 right-0 w-80 md:w-96 h-80 md:h-96 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-[60] overflow-hidden animate-in slide-in-from-bottom-2 duration-200">
-            {/* Header */}
-            <div className="flex items-center justify-between p-3 border-b border-slate-600 bg-slate-750">
+        <div className="fixed inset-x-0 bottom-0 md:absolute md:bottom-12 md:right-0 md:inset-x-auto w-full md:w-96 h-80 md:h-80 bg-slate-800 border-t md:border border-slate-600 md:rounded-xl shadow-2xl z-[60] overflow-hidden">
+            {/* Header - Only on desktop */}
+            <div className="hidden md:flex items-center justify-between p-3 border-b border-slate-600">
                 <h3 className="text-sm font-semibold text-white">Emojis</h3>
                 <button
                     onClick={onClose}
@@ -162,14 +162,14 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
                 </button>
             </div>
 
-            <div className="flex h-80 md:h-84">
-                {/* Categories Sidebar */}
-                <div className="w-12 bg-slate-700 border-r border-slate-600 flex flex-col py-1">
+            <div className="flex flex-col h-full md:h-auto">
+                {/* Categories Row - At Top for Mobile */}
+                <div className="flex bg-slate-700 border-b border-slate-600 p-1 overflow-x-auto scrollbar-hide">
                     {Object.entries(emojiCategories).map(([key, category]) => (
                         <button
                             key={key}
                             onClick={() => setActiveCategory(key)}
-                            className={`w-full h-10 flex items-center justify-center text-lg hover:bg-slate-600 transition-colors my-0.5 mx-0.5 rounded-md ${activeCategory === key
+                            className={`flex-shrink-0 w-10 h-10 flex items-center justify-center text-lg hover:bg-slate-600 transition-colors mx-0.5 rounded-md ${activeCategory === key
                                     ? 'bg-blue-600 text-white'
                                     : 'text-slate-300 hover:text-white'
                                 }`}
@@ -180,24 +180,33 @@ const CategoryEmojiPicker = ({ isOpen, onEmojiSelect, onClose }) => {
                     ))}
                 </div>
 
+                {/* Mobile Close Button */}
+                <div className="flex md:hidden items-center justify-between p-2 bg-slate-750">
+                    <span className="text-sm text-slate-400">{emojiCategories[activeCategory].name}</span>
+                    <button
+                        onClick={onClose}
+                        className="text-slate-400 hover:text-white p-1 hover:bg-slate-600 rounded-full transition-colors"
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
+
                 {/* Emoji Grid */}
-                <div className="flex-1 overflow-y-auto">
-                    <div className="p-2">
-                        <div className="grid grid-cols-8 gap-1">
-                            {emojiCategories[activeCategory].emojis.map((emoji, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => {
-                                        onEmojiSelect(emoji);
-                                        onClose();
-                                    }}
-                                    className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-lg md:text-xl hover:bg-slate-600 active:bg-slate-500 rounded-md transition-colors transform active:scale-95"
-                                    title={emoji}
-                                >
-                                    {emoji}
-                                </button>
-                            ))}
-                        </div>
+                <div className="flex-1 overflow-y-auto p-2">
+                    <div className="grid grid-cols-8 md:grid-cols-9 gap-1">
+                        {emojiCategories[activeCategory].emojis.map((emoji, index) => (
+                            <button
+                                key={index}
+                                onClick={() => {
+                                    onEmojiSelect(emoji);
+                                    onClose();
+                                }}
+                                className="w-10 h-10 md:w-8 md:h-8 flex items-center justify-center text-xl md:text-lg hover:bg-slate-600 active:bg-slate-500 rounded-md transition-colors transform active:scale-95"
+                                title={emoji}
+                            >
+                                {emoji}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>
