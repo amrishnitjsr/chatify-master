@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
-import { Smile } from "lucide-react";
+import { Smile, Camera, Paperclip, Mic, Send, Plus } from "lucide-react";
 import CategoryEmojiPicker from "./CategoryEmojiPicker";
 
 function CompactChatContainer() {
@@ -19,7 +19,12 @@ function CompactChatContainer() {
     const messageEndRef = useRef(null);
     const [newMessage, setNewMessage] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
     const emojiPickerRef = useRef(null);
+    const attachmentMenuRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const cameraInputRef = useRef(null);
 
     // Close emoji picker when clicking outside
     useEffect(() => {
@@ -27,16 +32,19 @@ function CompactChatContainer() {
             if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
                 setShowEmojiPicker(false);
             }
+            if (attachmentMenuRef.current && !attachmentMenuRef.current.contains(event.target)) {
+                setShowAttachmentMenu(false);
+            }
         };
 
-        if (showEmojiPicker) {
+        if (showEmojiPicker || showAttachmentMenu) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showEmojiPicker]);
+    }, [showEmojiPicker, showAttachmentMenu]);
 
     useEffect(() => {
         if (selectedUser?._id) {
@@ -78,6 +86,46 @@ function CompactChatContainer() {
 
     const closeEmojiPicker = () => {
         setShowEmojiPicker(false);
+    };
+
+    const toggleAttachmentMenu = () => {
+        setShowAttachmentMenu(prev => !prev);
+    };
+
+    const handleCameraCapture = () => {
+        cameraInputRef.current?.click();
+        setShowAttachmentMenu(false);
+    };
+
+    const handleFileUpload = () => {
+        fileInputRef.current?.click();
+        setShowAttachmentMenu(false);
+    };
+
+    const handleVoiceRecording = () => {
+        if (isRecording) {
+            // Stop recording logic here
+            setIsRecording(false);
+        } else {
+            // Start recording logic here
+            setIsRecording(true);
+        }
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // Handle file upload logic here
+            console.log('File selected:', file);
+        }
+    };
+
+    const handleCameraChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            // Handle camera photo logic here
+            console.log('Photo captured:', file);
+        }
     };
 
     if (!selectedUser) return null;
@@ -139,32 +187,90 @@ function CompactChatContainer() {
                 )}
             </div>
 
-            {/* Message Input - Android Optimized */}
-            <div className="p-4 pt-2 border-t border-slate-700/50 bg-black md:bg-slate-800/50 backdrop-blur-sm relative">
-                <form onSubmit={handleSendMessage} className="flex items-end gap-3">
-                    <div className="flex-1 relative">
-                        <input
-                            type="text"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Type a message..."
-                            className="w-full bg-slate-700/80 border border-slate-600/50 rounded-3xl px-6 py-3 pr-12 text-white placeholder-slate-400 text-base focus:outline-none focus:border-blue-500 focus:bg-slate-700 transition-all resize-none min-h-[48px] leading-relaxed"
-                            style={{ fontSize: '16px' }} // Prevents zoom on iOS
-                        />
+            {/* Message Input - WhatsApp Style */}
+            <div className="p-3 border-t border-slate-700/50 bg-slate-800/90 backdrop-blur-sm">
+                <div className="flex items-end gap-2">
+                    {/* Attachment Button */}
+                    <div className="relative" ref={attachmentMenuRef}>
+                        <button
+                            type="button"
+                            onClick={toggleAttachmentMenu}
+                            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
+                        >
+                            <Plus className="w-5 h-5" />
+                        </button>
 
-                        {/* Emoji Picker Button */}
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2" ref={emojiPickerRef}>
+                        {/* Attachment Menu */}
+                        {showAttachmentMenu && (
+                            <div className="absolute bottom-12 left-0 bg-slate-700 rounded-lg shadow-lg border border-slate-600 py-2 min-w-[160px] z-50">
+                                <button
+                                    onClick={handleCameraCapture}
+                                    className="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-slate-600 transition-colors"
+                                >
+                                    <Camera className="w-4 h-4 text-green-400" />
+                                    <span className="text-sm">Camera</span>
+                                </button>
+                                <button
+                                    onClick={handleFileUpload}
+                                    className="w-full flex items-center gap-3 px-4 py-2 text-white hover:bg-slate-600 transition-colors"
+                                >
+                                    <Paperclip className="w-4 h-4 text-blue-400" />
+                                    <span className="text-sm">Document</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Message Input Container */}
+                    <div className="flex-1 relative bg-slate-700 rounded-2xl border border-slate-600">
+                        <div className="flex items-center">
+                            {/* Emoji Button */}
                             <button
                                 type="button"
                                 onClick={toggleEmojiPicker}
-                                className={`p-2 rounded-full transition-colors ${showEmojiPicker
-                                    ? 'text-blue-400 bg-slate-600'
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-600'
-                                    }`}
+                                className={`p-2 ml-2 rounded-full transition-colors ${showEmojiPicker
+                                    ? 'text-yellow-400'
+                                    : 'text-slate-400 hover:text-yellow-400'
+                                }`}
                             >
                                 <Smile className="w-5 h-5" />
                             </button>
 
+                            {/* Text Input */}
+                            <input
+                                type="text"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="Message"
+                                className="flex-1 bg-transparent px-2 py-3 text-white placeholder-slate-400 text-base focus:outline-none"
+                                style={{ fontSize: '16px' }}
+                            />
+
+                            {/* Voice Recording or Send Button */}
+                            {newMessage.trim() ? (
+                                <button
+                                    type="submit"
+                                    onClick={handleSendMessage}
+                                    className="p-2 mr-2 rounded-full bg-green-600 hover:bg-green-700 text-white transition-all"
+                                >
+                                    <Send className="w-4 h-4" />
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleVoiceRecording}
+                                    className={`p-2 mr-2 rounded-full transition-all ${isRecording
+                                        ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse'
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-600'
+                                    }`}
+                                >
+                                    <Mic className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Emoji Picker */}
+                        <div ref={emojiPickerRef}>
                             {showEmojiPicker && (
                                 <CategoryEmojiPicker
                                     isOpen={showEmojiPicker}
@@ -174,21 +280,24 @@ function CompactChatContainer() {
                             )}
                         </div>
                     </div>
+                </div>
 
-                    {/* Send Button */}
-                    <button
-                        type="submit"
-                        disabled={!newMessage.trim()}
-                        className={`p-3 rounded-full touch-manipulation transition-all duration-200 ${newMessage.trim()
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95'
-                                : 'bg-slate-700/50 text-slate-500 cursor-not-allowed'
-                            }`}
-                    >
-                        <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                        </svg>
-                    </button>
-                </form>
+                {/* Hidden File Inputs */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="*/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                />
+                <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleCameraChange}
+                    className="hidden"
+                />
             </div>
         </div>
     );
