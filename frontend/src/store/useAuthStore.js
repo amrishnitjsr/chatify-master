@@ -45,10 +45,10 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
 
-      toast.success("Account created successfully!");
-
-      // Initialize post-signup actions with proper delays and error handling
-      get().initializePostAuthActions();
+      toast.success("Account created successfully! Reloading...", { duration: 2000 });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error("Signup error:", error);
       const errorMessage = error.response?.data?.message ||
@@ -66,10 +66,10 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
 
-      toast.success("Logged in successfully");
-
-      // Initialize post-login actions with proper delays and error handling
-      get().initializePostAuthActions();
+      toast.success("Logged in successfully! Reloading...", { duration: 2000 });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       console.error("Login error:", error);
       const errorMessage = error.response?.data?.message ||
